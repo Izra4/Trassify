@@ -5,12 +5,14 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.praktikum.trassify.ui.splash.SplashScreen
 import com.praktikum.trassify.ui.theme.TrassifyTheme
 
 class MainActivity : ComponentActivity() {
@@ -19,11 +21,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TrassifyTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                Surface (modifier = Modifier.fillMaxSize()){
+                    MainScreen()
                 }
             }
         }
@@ -31,17 +30,13 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun MainScreen(navController: NavController = rememberNavController()){
+    NavHost(
+        navController = navController,
+        startDestination = "splash"
+    ) {
+        composable(){
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    TrassifyTheme {
-        Greeting("Android")
+        }
     }
 }
