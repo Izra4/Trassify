@@ -13,7 +13,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.praktikum.trassify.ui.splash.SplashScreen
 import com.praktikum.trassify.ui.theme.TrassifyTheme
 import com.praktikum.trassify.ui.welcome.WelcomeScreen
 
@@ -35,12 +34,8 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(navController: NavController = rememberNavController()){
     NavHost(
         navController = navController as NavHostController,
-        startDestination = "splash"
+        startDestination = "welcome"
     ) {
-        composable("splash"){
-            SplashScreen(navController = navController)
-        }
-
         composable("welcome"){
             WelcomeScreen(navController = navController)
         }
