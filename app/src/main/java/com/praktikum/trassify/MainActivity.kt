@@ -9,11 +9,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.praktikum.trassify.ui.splash.SplashScreen
 import com.praktikum.trassify.ui.theme.TrassifyTheme
+import com.praktikum.trassify.ui.welcome.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,11 +34,15 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen(navController: NavController = rememberNavController()){
     NavHost(
-        navController = navController,
+        navController = navController as NavHostController,
         startDestination = "splash"
     ) {
-        composable(){
+        composable("splash"){
+            SplashScreen(navController = navController)
+        }
 
+        composable("welcome"){
+            WelcomeScreen(navController = navController)
         }
     }
 }
