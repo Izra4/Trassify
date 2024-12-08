@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Trassify</string>
+    <string name="title_activity_camerax">CameraxActivity</string>
+    <string name="title_activity_schedule">ScheduleActivity</string>
 </resources>
