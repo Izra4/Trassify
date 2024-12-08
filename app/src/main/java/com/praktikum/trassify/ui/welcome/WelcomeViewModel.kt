@@ -9,8 +9,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.praktikum.trassify.constants.welcomeContent
 import com.praktikum.trassify.data.model.WelcomePage
+import androidx.navigation.NavController
 
-class WelcomeViewModel : ViewModel() {
+class WelcomeViewModel(private val navController: NavController? = null) : ViewModel() {
     private val _currentPageIndex = mutableStateOf(0)
     val currentPageIndex: State<Int> get() = _currentPageIndex
 
@@ -24,17 +25,14 @@ class WelcomeViewModel : ViewModel() {
         }
     }
 
-    fun previousPage() {
-        val prevIndex = _currentPageIndex.value - 1
-        if (prevIndex >= 0) {
-            _currentPageIndex.value = prevIndex
-        }
+    fun skipToLogin() {
+        navController?.navigate("login")
     }
 
     companion object {
-        fun Factory(context : Context) : ViewModelProvider.Factory = viewModelFactory {
+        fun Factory(context: Context, navController: NavController? = null): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                WelcomeViewModel()
+                WelcomeViewModel(navController)
             }
         }
     }
