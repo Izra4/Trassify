@@ -18,15 +18,22 @@ class WelcomeViewModel(private val navController: NavController? = null) : ViewM
     val currentPageContent: WelcomePage
         get() = welcomeContent[_currentPageIndex.value]
 
+    val totalPages: Int
+        get() = welcomeContent.size
+
     fun nextPage() {
         val nextIndex = _currentPageIndex.value + 1
-        if (nextIndex < welcomeContent.size) {
+        if (nextIndex < totalPages) {
             _currentPageIndex.value = nextIndex
         }
     }
 
-    fun skipToLogin() {
+    fun navigateToLogin() {
         navController?.navigate("login")
+    }
+
+    fun backToWelcome(){
+        _currentPageIndex.value = 0
     }
 
     companion object {

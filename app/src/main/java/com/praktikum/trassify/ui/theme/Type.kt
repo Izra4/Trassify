@@ -12,8 +12,8 @@ import com.praktikum.trassify.R
 val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = FontFamily(Font(R.font.monserrat_black)),
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        fontSize = 20.sp,
     )
     /* Other default text styles to override
     titleLarge = TextStyle(
