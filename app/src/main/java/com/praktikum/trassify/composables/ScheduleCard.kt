@@ -29,12 +29,6 @@ import com.praktikum.trassify.ui.theme.White
 
 @Composable()
 fun ScheduleCard(){
-
-}
-
-@Preview(showBackground = true)
-@Composable()
-fun ScheduleCardPreview(){
     Box(
         modifier = Modifier
             .width(320.dp)
@@ -71,4 +65,10 @@ fun ScheduleCardPreview(){
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable()
+fun ScheduleCardPreview(){
+    ScheduleCard()
 }
