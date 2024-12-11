@@ -4,53 +4,59 @@ import com.praktikum.trassify.R
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 object TextType{
     val text25SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 25.sp
     )
 
     val text20SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 20.sp
     )
 
     val text16SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 16.sp
     )
 
     val text15SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 15.sp
     )
 
     val text14SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 14.sp
     )
 
 
     val text10SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 10.sp
     )
 
     val text8SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 8.sp
     )
 
     val text5SemiBold = TextStyle(
-        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontFamily = FontFamily(Font(R.font.mont_semi_bold)),
         fontSize = 5.sp
     )
 
     val text20Md = TextStyle(
         fontFamily = FontFamily(Font(R.font.mont_md)),
         fontSize = 20.sp
+    )
+
+    val text19Md = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mont_md)),
+        fontSize = 19.sp,
     )
 
     val text17Md = TextStyle(
