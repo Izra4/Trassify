@@ -1,4 +1,4 @@
-package com.praktikum.trassify
+package com.praktikum.trassify.view
 
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.praktikum.trassify.MainActivity
+import com.praktikum.trassify.R
 import com.praktikum.trassify.ui.theme.TrassifyTheme
 import kotlinx.coroutines.delay
 
@@ -38,7 +40,7 @@ fun SplashScreen(){
     LaunchedEffect(true
     ){
         delay(2000)
-        context.startActivity(Intent(context,MainActivity::class.java))
+        context.startActivity(Intent(context, MainActivity::class.java))
         if(context is SplashActivity){
             context.finish()
         }

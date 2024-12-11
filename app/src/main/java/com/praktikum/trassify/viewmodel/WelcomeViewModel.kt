@@ -1,4 +1,4 @@
-package com.praktikum.trassify.ui.welcome
+package com.praktikum.trassify.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
@@ -8,14 +8,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.praktikum.trassify.constants.welcomeContent
-import com.praktikum.trassify.data.model.WelcomePage
+import com.praktikum.trassify.constants.WelcomeRepository
 import androidx.navigation.NavController
 
 class WelcomeViewModel(private val navController: NavController? = null) : ViewModel() {
     private val _currentPageIndex = mutableStateOf(0)
     val currentPageIndex: State<Int> get() = _currentPageIndex
 
-    val currentPageContent: WelcomePage
+    val currentPageContent: WelcomeRepository
         get() = welcomeContent[_currentPageIndex.value]
 
     val totalPages: Int

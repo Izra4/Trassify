@@ -14,7 +14,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.praktikum.trassify.ui.theme.TrassifyTheme
-import com.praktikum.trassify.ui.welcome.WelcomeScreen
+import com.praktikum.trassify.view.WelcomeScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

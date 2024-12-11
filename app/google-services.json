@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "244334624829",
+    "project_id": "papb-trassify",
+    "storage_bucket": "papb-trassify.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:244334624829:android:1953901c6818312322aa54",
+        "android_client_info": {
+          "package_name": "com.praktikum.trassify"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "244334624829-q6ebts6sl640nhehnvbp3aqp7btss1pp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.praktikum.trassify",
+            "certificate_hash": "9d44ab5b63c436e79585bf921bd47d049b6f2396"
+          }
+        },
+        {
+          "client_id": "244334624829-eqv293u28h4u2lotupqo35huj2i1vk0o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAuUpJFsypBRlN8fid30wZWcSpeqB38chM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "244334624829-eqv293u28h4u2lotupqo35huj2i1vk0o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

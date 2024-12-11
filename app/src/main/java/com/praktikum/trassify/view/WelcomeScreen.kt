@@ -1,4 +1,4 @@
-package com.praktikum.trassify.ui.welcome
+package com.praktikum.trassify.view
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,19 +22,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.praktikum.trassify.ui.theme.Gray10
 import com.praktikum.trassify.R
 import com.praktikum.trassify.ui.theme.Primary10
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import com.praktikum.trassify.ui.theme.Gray20
 import com.praktikum.trassify.ui.theme.TextType
+import com.praktikum.trassify.viewmodel.WelcomeViewModel
 
 @Composable
 fun WelcomeScreen(
