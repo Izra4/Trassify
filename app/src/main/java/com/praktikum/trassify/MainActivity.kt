@@ -16,6 +16,7 @@ import com.praktikum.trassify.composables.ProfileCard
 import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.TrassifyTheme
 import com.praktikum.trassify.view.DashboardView
+import com.praktikum.trassify.view.ScheduleView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
             TrassifyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column (modifier = Modifier.padding(innerPadding)){
-                        DashboardView()
+                        ScheduleView()
                     }
                 }
             }

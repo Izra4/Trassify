@@ -28,9 +28,11 @@ import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.White
 
 @Composable()
-fun ScheduleCard(){
+fun ScheduleCard(
+    modifier: Modifier = Modifier
+){
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(320.dp)
             .height(105.dp)
             .clip(RoundedCornerShape(10.dp))
