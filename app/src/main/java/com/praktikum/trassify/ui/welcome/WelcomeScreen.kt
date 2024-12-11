@@ -34,6 +34,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import com.praktikum.trassify.ui.theme.Gray20
+import com.praktikum.trassify.ui.theme.TextType
 
 @Composable
 fun WelcomeScreen(
@@ -103,19 +104,15 @@ fun WelcomeScreen(
             Text(
                 text = pageContent.title,
                 textAlign = TextAlign.Center,
-                fontFamily = FontFamily(Font(R.font.monserrat_black)),
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                lineHeight = 25.sp,
+                style = TextType.text20Bold,
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 12.dp)
             )
             Text(
                 text = pageContent.description,
-                fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 12.sp,
                 textAlign = TextAlign.Center,
-                color = Gray10
+                color = Gray10,
+                style = TextType.text10SemiBold,
+                modifier = Modifier.padding(horizontal = 32.dp)
             )
             if(currentIndex > 0){
                 Row(
@@ -160,9 +157,7 @@ fun WelcomeScreen(
                 Text(
                     text = if(currentIndex < totalPages -1 )"Selanjutnya" else "Memulai",
                     modifier = Modifier.padding(vertical = 16.dp),
-                    fontSize = 16.sp,
-                    fontFamily = FontFamily(Font(R.font.montserrat_regular)),
-                    fontWeight = FontWeight.SemiBold
+                   style = TextType.text16SemiBold
                 )
             }
         }
