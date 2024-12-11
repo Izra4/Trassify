@@ -38,7 +38,7 @@ fun ProfileCard(){
     ){
     Box(
         modifier = Modifier
-            .width(320.dp)
+            .fillMaxWidth()
             .height(120.dp)
             .clip(RoundedCornerShape(20.dp))
             .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))

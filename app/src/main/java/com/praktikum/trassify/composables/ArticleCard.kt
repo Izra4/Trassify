@@ -33,7 +33,6 @@ fun ArticleCard() {
             .height(126.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(White)
-            .padding(8.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
