@@ -40,7 +40,7 @@ fun ProfileCard(){
         modifier = Modifier
             .width(320.dp)
             .height(120.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(20.dp))
             .shadow(elevation = 5.dp, shape = RoundedCornerShape(8.dp))
             .background(color = White),
         contentAlignment = Alignment.Center
