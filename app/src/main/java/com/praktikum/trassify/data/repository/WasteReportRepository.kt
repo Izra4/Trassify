@@ -21,11 +21,10 @@ class WasteReportRepository(private val firebaseReference: DatabaseReference) {
         }
     }
 
-    fun getWasteReports(
-        onSuccess: (List<WasteReport>) -> Unit,
-        onError: (Exception) -> Unit
-    ) {
+    fun getWasteReportsByUserId(userId: String, onSuccess: (List<WasteReport>) -> Unit, onError: (Exception) -> Unit) {
         firebaseReference.child("waste_reports")
+            .orderByChild("userId")  // Menyaring data berdasarkan userId
+            .equalTo(userId)         // Mencocokkan userId dengan yang diberikan
             .get()
             .addOnSuccessListener { snapshot ->
                 val wasteReports = mutableListOf<WasteReport>()
@@ -41,5 +40,31 @@ class WasteReportRepository(private val firebaseReference: DatabaseReference) {
                 onError(exception)
             }
     }
+
+    fun getWasteReportById(
+        reportId: String,
+        onSuccess: (WasteReport) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        firebaseReference.child("waste_reports").child(reportId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                try {
+                    // Pastikan snapshot adalah objek DataSnapshot yang valid
+                    val wasteReport = snapshot.getValue(WasteReport::class.java)
+                    if (wasteReport != null) {
+                        onSuccess(wasteReport)
+                    } else {
+                        onError(Exception("Laporan tidak ditemukan"))
+                    }
+                } catch (e: Exception) {
+                    onError(e)
+                }
+            }
+            .addOnFailureListener { exception ->
+                onError(exception)
+            }
+    }
+
 }
 

@@ -23,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.rememberAsyncImagePainter
 import com.praktikum.trassify.R
 import com.praktikum.trassify.data.model.WasteReport
+import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.viewmodel.WasteReportViewModel
 
 @Composable
@@ -105,14 +106,13 @@ fun WasteReportHistoryDetailPage(
                     // Lokasi Sampah
                     Text(
                         text = "Lokasi Sampah:",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colorResource(id = R.color.purple_200),
+                        style = TextType.text14SemiBold,
+                        color = Color.Black,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = wasteReport.location ?: "Lokasi tidak tersedia",
-                        fontSize = 14.sp,
+                        style = TextType.text13Rg,
                         color = Color.Black
                     )
 
@@ -121,14 +121,13 @@ fun WasteReportHistoryDetailPage(
                     // Catatan
                     Text(
                         text = "Catatan:",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colorResource(id = R.color.purple_200),
+                        style = TextType.text14SemiBold,
+                        color = Color.Black,
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = wasteReport.note ?: "Catatan tidak tersedia",
-                        fontSize = 14.sp,
+                        style = TextType.text13Rg,
                         color = Color.Black
                     )
 
@@ -137,13 +136,30 @@ fun WasteReportHistoryDetailPage(
                     // Dokumentasi Laporan
                     Text(
                         text = "Dokumentasi Laporan:",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colorResource(id = R.color.purple_200),
+                        style = TextType.text14SemiBold,
+                        color = Color.Black,
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Image(
                         painter = rememberAsyncImagePainter(wasteReport.photoReport),
+                        contentDescription = "Dokumentasi Laporan",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .padding(8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Dokumentasi Diambil
+                    Text(
+                        text = "Dokumentasi Diambil:",
+                        style = TextType.text14SemiBold,
+                        color = Color.Black,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Image(
+                        painter = rememberAsyncImagePainter(wasteReport.photoResponse),
                         contentDescription = "Dokumentasi Laporan",
                         modifier = Modifier
                             .fillMaxWidth()

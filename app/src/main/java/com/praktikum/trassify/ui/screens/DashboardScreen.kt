@@ -14,11 +14,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseUser
+import com.praktikum.trassify.data.model.User
 import com.praktikum.trassify.ui.theme.TextType
 
 @Composable
 fun DashboardScreen(
-    user: FirebaseUser?,
+    user: User?,
     onSignOutClick: () -> Unit
 ) {
     Column(
@@ -34,7 +35,7 @@ fun DashboardScreen(
         )
 
         Text(
-            text = user?.displayName ?: "User",
+            text = user?.name ?: "User",
             style = TextType.text24Md,
             modifier = Modifier.padding(bottom = 32.dp)
         )

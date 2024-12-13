@@ -28,9 +28,9 @@ import com.praktikum.trassify.utils.extractDateAndTime
 @Composable
 fun WasteReportCard(
     modifier: Modifier = Modifier,
-    wasteReport: WasteReport // Terima objek WasteReport
+    wasteReport: WasteReport,
+    onClick: () -> Unit // Tambahkan parameter onClick
 ) {
-
     val (date, time) = extractDateAndTime(wasteReport.timestamp)
 
     Box(
@@ -41,67 +41,53 @@ fun WasteReportCard(
             .shadow(elevation = 8.dp, shape = RoundedCornerShape(16.dp))
             .background(color = colorResource(id = R.color.purple_500)),
     ) {
-        // Gambar lingkaran di pojok kanan atas
         Image(
             painter = painterResource(id = R.drawable.circle_schedule),
             contentDescription = "circle",
             modifier = Modifier.align(Alignment.TopEnd)
         )
 
-        Row(modifier = Modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                    .width(4.dp)
-                    .height(65.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(Color(0xFFD9D9D9))
-            )
-        }
-
-        // Konten utama
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Teks bagian atas: Tampilkan tanggal
             Text(
-                text = date, // Gunakan tanggal dari WasteReport
+                text = date,
                 style = TextType.text16SemiBold,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = wasteReport.location, // Tampilkan alamat dari WasteReport
+                text = wasteReport.location,
                 style = TextType.text12Rg,
                 color = Color.White
             )
             Spacer(modifier = Modifier.weight(1f))
             Text(
-                text = time, // Tampilkan waktu dari WasteReport
+                text = time,
                 style = TextType.text12Md,
                 color = Color.White
             )
         }
 
-        // Tombol di pojok kanan bawah
         Button(
-            onClick = { /* TODO: Add navigation or action */ },
+            onClick = onClick, // Gunakan onClick untuk navigasi
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 16.dp, bottom = 16.dp)
-                .width(90.dp) // Lebar tombol lebih kecil
-                .height(32.dp), // Tinggi tombol lebih kecil
+                .width(90.dp)
+                .height(32.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.White,
                 contentColor = colorResource(id = R.color.purple_500)
             ),
             shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp) // Mengurangi padding
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
         ) {
             Text(
                 text = "Lihat detail",
-                fontSize = 11.sp, // Ukuran font lebih kecil
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily(Font(R.font.mont_semi_bold))
             )

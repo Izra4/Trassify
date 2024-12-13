@@ -3,28 +3,10 @@ package com.praktikum.trassify.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -40,19 +22,36 @@ import com.praktikum.trassify.ui.components.AnimatedTextField
 import com.praktikum.trassify.ui.components.LoadHeader
 import com.praktikum.trassify.ui.theme.MainPurple
 import com.praktikum.trassify.ui.theme.TextType
+import com.praktikum.trassify.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
+    viewModel: AuthViewModel,
     onGoogleSignInClick: () -> Unit
 ) {
+    val signInState by viewModel.signInState.collectAsState()
     val emailFocusRequester = remember { FocusRequester() }
     val passwordFocusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         LoadHeader(text = "Halo, Orang Lama!")
+
+        // Loading overlay
+        if (signInState is AuthViewModel.SignInState.Loading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MainPurple)
+            }
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,6 +71,15 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.height(30.dp))
 
+            // Error message
+            if (signInState is AuthViewModel.SignInState.Error) {
+                Text(
+                    text = (signInState as AuthViewModel.SignInState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
+
             Column(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -79,7 +87,7 @@ fun LoginScreen(
                     field = "Email",
                     image = R.drawable.mail,
                     focusRequester = emailFocusRequester,
-                    onNext = {passwordFocusRequester.requestFocus()}
+                    onNext = { passwordFocusRequester.requestFocus() }
                 )
 
                 Spacer(modifier = Modifier.height(26.dp))
@@ -96,19 +104,20 @@ fun LoginScreen(
                 Box(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    Column (
+                    Column(
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
                             .padding(bottom = 42.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         Button(
                             onClick = { /* Handle regular login */ },
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MainPurple
                             ),
-                            shape = RoundedCornerShape(24.dp)
+                            shape = RoundedCornerShape(24.dp),
+                            enabled = signInState !is AuthViewModel.SignInState.Loading
                         ) {
                             Text(
                                 text = "Masuk",
@@ -121,8 +130,7 @@ fun LoginScreen(
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -131,14 +139,12 @@ fun LoginScreen(
                                 thickness = 1.dp,
                                 color = Color.Gray
                             )
-
                             Text(
                                 text = "Atau",
                                 color = Color.Gray,
                                 fontSize = 14.sp,
-                                modifier = Modifier.padding(horizontal = 8.dp) // Menambahkan padding horizontal
+                                modifier = Modifier.padding(horizontal = 8.dp)
                             )
-
                             HorizontalDivider(
                                 modifier = Modifier.weight(1f),
                                 thickness = 1.dp,
@@ -150,12 +156,12 @@ fun LoginScreen(
 
                         Button(
                             onClick = onGoogleSignInClick,
-                            modifier = Modifier
-                                .border(1.dp, Color.Gray, RoundedCornerShape(24.dp)),
+                            modifier = Modifier.border(1.dp, Color.Gray, RoundedCornerShape(24.dp)),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Transparent,
                                 contentColor = Color.Black
                             ),
+                            enabled = signInState !is AuthViewModel.SignInState.Loading
                         ) {
                             Row(
                                 modifier = Modifier.padding(4.dp),
@@ -185,7 +191,10 @@ fun LoginScreen(
                                 text = "Belum punya akun?",
                                 style = TextType.text13Rg
                             )
-                            TextButton(onClick = {navController.navigate("register")}) {
+                            TextButton(
+                                onClick = { navController.navigate("register") },
+                                enabled = signInState !is AuthViewModel.SignInState.Loading
+                            ) {
                                 Text(
                                     text = "Daftar",
                                     color = MainPurple,
@@ -195,6 +204,15 @@ fun LoginScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    // Handle successful sign in
+    LaunchedEffect(signInState) {
+        if (signInState is AuthViewModel.SignInState.Success) {
+            navController.navigate("camera") {
+                popUpTo("login") { inclusive = true }
             }
         }
     }

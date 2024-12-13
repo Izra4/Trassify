@@ -22,8 +22,10 @@ import androidx.compose.ui.unit.sp
 import com.praktikum.trassify.R
 import com.praktikum.trassify.viewmodel.CameraViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.praktikum.trassify.data.model.WasteReport
+import com.praktikum.trassify.utils.formatTimestamp
 import com.praktikum.trassify.viewmodel.LocationViewModel
 import com.praktikum.trassify.viewmodel.WasteReportViewModel
 
@@ -31,7 +33,8 @@ import com.praktikum.trassify.viewmodel.WasteReportViewModel
 fun ReportWastePage(
     cameraViewModel: CameraViewModel = viewModel(),
     locationViewModel: LocationViewModel = viewModel(),
-    wasteReportViewModel: WasteReportViewModel = viewModel() // Tambahkan ViewModel untuk WasteReport
+    wasteReportViewModel: WasteReportViewModel = viewModel(),
+    navController: NavController
 ) {
     var catatan by remember { mutableStateOf("") }
     val imageUri by cameraViewModel.imageUri
@@ -154,7 +157,7 @@ fun ReportWastePage(
                         onClick = {
                             // Validasi dan Kirim Data
                             if (location.isNotBlank() && catatan.isNotBlank() && userId != null) {
-                                val timestamp = System.currentTimeMillis().toString()
+                                val timestamp = formatTimestamp(System.currentTimeMillis())
                                 val wasteReport = WasteReport(
                                     id = "", // Akan diisi oleh Repository
                                     userId = userId,
@@ -168,13 +171,14 @@ fun ReportWastePage(
                                     wasteReport = wasteReport,
                                     imageUri = imageUri!!,
                                     context = context,
-                                    bucket = "waste_image",
+                                    bucket = "waste-photos",
                                     onSuccess = {
                                         Toast.makeText(
                                             context,
                                             "Laporan berhasil disimpan!",
                                             Toast.LENGTH_SHORT
                                         ).show()
+                                        navController.navigate("reportWasteHistory")
                                     },
                                     onError = { error ->
                                         Toast.makeText(

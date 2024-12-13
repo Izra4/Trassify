@@ -11,15 +11,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.credentials.CredentialManager
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.praktikum.trassify.ui.theme.TrassifyTheme
@@ -33,38 +36,45 @@ import com.praktikum.trassify.viewmodel.WasteReportViewModel
 import com.praktikum.trassify.viewmodel.WasteReportViewModelFactory
 import com.praktikum.trassify.model.CameraRepository
 import com.praktikum.trassify.data.repository.WasteReportRepository
+import com.praktikum.trassify.data.repository.UserRepository
 import com.praktikum.trassify.ui.screens.LoginScreen
 import com.praktikum.trassify.ui.screens.DashboardScreen
 import com.praktikum.trassify.ui.screens.RegisterScreen
+import com.praktikum.trassify.view.WasteReportHistoryDetailPage
 import com.praktikum.trassify.view.WelcomeScreen
-import com.praktikum.trassify.ui.viewmodel.AuthViewModel
-import com.praktikum.trassify.ui.viewmodel.AuthViewModelFactory
+import com.praktikum.trassify.viewmodel.AuthViewModel
+import com.praktikum.trassify.viewmodel.AuthViewModelFactory
 import com.praktikum.trassify.view.WasteReportHistoryView
+import com.praktikum.trassify.viewmodel.LocationViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var loginViewModel: AuthViewModel
+    private lateinit var userRepository: UserRepository
+    private lateinit var authViewModel: AuthViewModel
     private lateinit var cameraViewModel: CameraViewModel
+    private lateinit var locationViewModel: LocationViewModel
     private lateinit var bottomNavViewModel: BottomNavViewModel
     private lateinit var wasteReportViewModel: WasteReportViewModel
+    private val credentialManager by lazy { CredentialManager.create(this) }
 
-    // Launcher untuk meminta izin kamera
-    private val cameraPermissionRequest by lazy {
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            cameraViewModel.updateCameraPermission(isGranted)
-        }
-    }
-
-    // Launcher untuk memilih gambar
+    // Pindahkan deklarasi launcher ke dalam onCreate()
+    private lateinit var cameraPermissionRequest: ActivityResultLauncher<String>
     private lateinit var pickImageLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Inisialisasi Firebase dan UserRepository
         auth = FirebaseAuth.getInstance()
-        loginViewModel = ViewModelProvider(this, AuthViewModelFactory(auth)).get(AuthViewModel::class.java)
+        userRepository = UserRepository(FirebaseDatabase.getInstance(), auth)
+
+        // Inisialisasi AuthViewModel dengan UserRepository
+        authViewModel = ViewModelProvider(
+            this,
+            AuthViewModelFactory(auth, userRepository)
+        )[AuthViewModel::class.java]
 
         // Inisialisasi CameraViewModel
         val cameraRepository = CameraRepository(this)
@@ -72,6 +82,10 @@ class MainActivity : ComponentActivity() {
             this,
             CameraViewModelFactory(cameraRepository)
         )[CameraViewModel::class.java]
+
+        // Inisialisasi LocationViewModel
+        locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
+
 
         // Inisialisasi BottomNavViewModel
         bottomNavViewModel = ViewModelProvider(this)[BottomNavViewModel::class.java]
@@ -84,18 +98,28 @@ class MainActivity : ComponentActivity() {
             wasteReportViewModelFactory
         )[WasteReportViewModel::class.java]
 
+        // Inisialisasi launcher
+        cameraPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            cameraViewModel.updateCameraPermission(isGranted)
+        }
+        pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            // Handle picked image
+        }
+
         setContent {
             TrassifyTheme {
                 val navController = rememberNavController()
-                val currentUser = loginViewModel.currentUser
+                val currentUser by authViewModel.currentUser.collectAsState()
 
+                // Main NavHost untuk seluruh aplikasi
                 NavHost(
                     navController = navController,
-                    startDestination = if (currentUser != null) "dashboard" else "welcome"
+                    startDestination = if (currentUser != null) "home" else "welcome"
                 ) {
                     composable("login") {
                         LoginScreen(
                             navController = navController,
+                            viewModel = authViewModel,
                             onGoogleSignInClick = { signInWithGoogle(navController) }
                         )
                     }
@@ -115,12 +139,48 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("home") {
+                        // Tampilan home dengan Bottom Navigation
                         TrassifyApp(
+                            navController = navController,
                             cameraViewModel = cameraViewModel,
                             bottomNavViewModel = bottomNavViewModel,
                             wasteReportViewModel = wasteReportViewModel,
                             onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
                             onPickImage = { pickImageLauncher.launch("image/*") }
+                        )
+                    }
+                    composable("camera") {
+                        // Halaman kamera
+                        CameraPreviewScreen(
+                            navController = navController,
+                            viewModel = cameraViewModel,
+                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
+                            onPickImage = { pickImageLauncher.launch("image/*") }
+                        )
+                    }
+                    composable("reportWaste") {
+                        // Halaman untuk laporan sampah
+                        ReportWastePage(
+                            wasteReportViewModel = wasteReportViewModel,
+                            locationViewModel = locationViewModel,
+                            cameraViewModel = cameraViewModel,
+                            navController = navController,
+                        )
+                    }
+                    composable("reportWasteHistory") {
+                        WasteReportHistoryView(
+                            navController = navController,
+                            wasteReportViewModel = wasteReportViewModel
+                        )
+                    }
+                    composable(
+                        route = "detail/{reportId}",
+                        arguments = listOf(navArgument("reportId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val reportId = backStackEntry.arguments?.getString("reportId") ?: return@composable
+                        WasteReportHistoryDetailPage(
+                            reportId = reportId,
+                            wasteReportViewModel = wasteReportViewModel
                         )
                     }
                 }
@@ -129,9 +189,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun signInWithGoogle(navController: NavController) {
-        val credentialManager = CredentialManager.create(this)
-
-        loginViewModel.signInWithGoogle(
+        authViewModel.signInWithGoogle(
             credentialManager = credentialManager,
             navController = navController,
             context = this
@@ -140,26 +198,24 @@ class MainActivity : ComponentActivity() {
 
     private fun signOut(navController: NavController) {
         lifecycleScope.launch {
-            val credentialManager = CredentialManager.create(this@MainActivity)
-            loginViewModel.signOut(credentialManager, navController)
+            authViewModel.signOut(credentialManager, navController)
         }
     }
 }
 
 @Composable
 fun TrassifyApp(
+    navController: NavController,  // Gunakan NavController yang sama
     cameraViewModel: CameraViewModel,
     bottomNavViewModel: BottomNavViewModel,
     wasteReportViewModel: WasteReportViewModel,
     onRequestCameraPermission: () -> Unit,
     onPickImage: () -> Unit
 ) {
-    val navController = rememberNavController()
     val currentRoute by navController.currentBackStackEntryAsState()
 
     Scaffold(
         bottomBar = {
-            // Cek apakah current route adalah "camera"
             val isCameraSelected = currentRoute?.destination?.route == "camera"
 
             BottomNavBar(
@@ -171,32 +227,20 @@ fun TrassifyApp(
                         1 -> navController.navigate("jadwal")
                         2 -> navController.navigate("berita")
                         3 -> navController.navigate("merchandise")
+                        4 -> navController.navigate("reportWasteHistory")
+                        5 -> navController.navigate("reportWaste")
                     }
                 },
-                isCameraSelected = isCameraSelected, // Berikan nilai untuk isCameraSelected
+                isCameraSelected = isCameraSelected,
                 onCameraClick = {
-                    navController.navigate("camera") // Menavigasi ke halaman kamera
+                    navController.navigate("camera")  // Navigasi ke halaman kamera
                 }
             )
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            NavHost(navController = navController, startDestination = "home") {
-                composable("home") {
-                    WasteReportHistoryView(wasteReportViewModel)
-                }
-                composable("camera") {
-                    CameraPreviewScreen(
-                        navController = navController,
-                        viewModel = cameraViewModel,
-                        onRequestCameraPermission = onRequestCameraPermission,
-                        onPickImage = onPickImage
-                    )
-                }
-                composable("reportWaste") {
-                    ReportWastePage(wasteReportViewModel = wasteReportViewModel)
-                }
-            }
+            // Tampilan konten halaman home
+            WasteReportHistoryView(navController, wasteReportViewModel)
         }
     }
 }

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "463979944847",
+    "firebase_url": "https://trassify-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "trassify",
     "storage_bucket": "trassify.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.praktikum.trassify"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "463979944847-q1oo5thpjrbimvckh85dlqlsa225pi0i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.praktikum.trassify",
+            "certificate_hash": "3ecf1f6e3048bf2517e6dfb39d85c66bf8559f26"
+          }
+        },
+        {
+          "client_id": "463979944847-j5frk8huqnk1p4eundjd5p7n0rjl3bau.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCUIVzu-gX4A6buwVPOUEpvFtD3JlTnGWg"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "463979944847-j5frk8huqnk1p4eundjd5p7n0rjl3bau.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

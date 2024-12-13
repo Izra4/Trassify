@@ -3,6 +3,8 @@ package com.praktikum.trassify.viewmodel
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.praktikum.trassify.App
@@ -17,7 +19,19 @@ import kotlinx.coroutines.withContext
 
 class WasteReportViewModel(
     private val repository: WasteReportRepository,
-    private val supabaseClient: SupabaseClient = App.supabaseClient) : ViewModel() {
+    private val supabaseClient: SupabaseClient = App.supabaseClient
+) : ViewModel() {
+
+    // State untuk menyimpan laporan terfilter
+    private val _filteredWasteReports = mutableStateOf<List<WasteReport>>(emptyList())
+    val filteredWasteReports: State<List<WasteReport>> get() = _filteredWasteReports
+
+    // State untuk menyimpan filter status
+    private val _currentFilter = mutableStateOf("Pending") // Default filter
+    val currentFilter: State<String> get() = _currentFilter
+
+    // Semua laporan yang diambil dari repository
+    private val allWasteReports = mutableListOf<WasteReport>()
 
     fun saveWasteReport(
         wasteReport: WasteReport,
@@ -63,18 +77,54 @@ class WasteReportViewModel(
         }
     }
 
-    fun fetchWasteReports(
-        onSuccess: (List<WasteReport>) -> Unit,
+    fun fetchWasteReportDetail(
+        reportId: String,
+        onSuccess: (WasteReport) -> Unit,
         onError: (Exception) -> Unit
     ) {
-        repository.getWasteReports(
-            onSuccess = { wasteReports ->
-                onSuccess(wasteReports) // Kirim data kembali ke UI
-            },
-            onError = { exception ->
-                onError(exception) // Kirim error kembali ke UI
-            }
-        )
+        viewModelScope.launch {
+            repository.getWasteReportById(
+                reportId = reportId,
+                onSuccess = { wasteReport ->
+                    onSuccess(wasteReport)
+                },
+                onError = { exception ->
+                    onError(exception)
+                }
+            )
+        }
+    }
+
+    fun fetchWasteReports(
+        userId: String,
+        onSuccess: () -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        viewModelScope.launch {
+            repository.getWasteReportsByUserId(
+                userId = userId,
+                onSuccess = { reports ->
+                    allWasteReports.clear()
+                    allWasteReports.addAll(reports)
+                    filterReports() // Filter laporan sesuai filter saat ini
+                    onSuccess()
+                },
+                onError = { exception ->
+                    onError(exception)
+                }
+            )
+        }
+    }
+
+    fun setFilter(filter: String) {
+        _currentFilter.value = filter
+        filterReports()
+    }
+
+    private fun filterReports() {
+        val filtered = allWasteReports.filter { it.status == _currentFilter.value }
+        _filteredWasteReports.value = filtered
     }
 }
+
 

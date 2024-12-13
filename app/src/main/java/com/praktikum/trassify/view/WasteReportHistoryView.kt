@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -24,6 +25,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.praktikum.trassify.composables.DropdownExample
 import com.praktikum.trassify.composables.WasteReportCard
 import com.praktikum.trassify.data.model.WasteReport
@@ -32,24 +35,33 @@ import com.praktikum.trassify.ui.theme.White
 import com.praktikum.trassify.viewmodel.WasteReportViewModel
 
 @Composable
-fun WasteReportHistoryView(wasteReportViewModel: WasteReportViewModel = viewModel()) {
-    // State untuk menyimpan list laporan dan error message
-    val wasteReports = remember { mutableStateOf<List<WasteReport>>(emptyList()) }
+fun WasteReportHistoryView(
+    navController: NavController,
+    wasteReportViewModel: WasteReportViewModel = viewModel()
+) {
+    // Ambil daftar laporan terfilter dan status filter aktif
+    val wasteReports by wasteReportViewModel.filteredWasteReports
+    val currentFilter by wasteReportViewModel.currentFilter
+
     val errorMessage = remember { mutableStateOf<String?>(null) }
 
-    // Ambil data laporan
-    LaunchedEffect(true) {
-        wasteReportViewModel.fetchWasteReports(
-            onSuccess = { reports ->
-                println("Reports fetched: $reports") // Debugging
-                wasteReports.value = reports
-                errorMessage.value = null
-            },
-            onError = { exception ->
-                println("Error fetching reports: ${exception.message}") // Debugging
-                errorMessage.value = "Gagal mengambil data laporan: ${exception.message}"
-            }
-        )
+    // Mendapatkan userId dari FirebaseAuth
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userId = currentUser?.uid
+
+    // Ambil data laporan saat halaman dimuat
+    LaunchedEffect(userId) {
+        if (userId != null) {
+            wasteReportViewModel.fetchWasteReports(
+                userId = userId,
+                onSuccess = {
+                    errorMessage.value = null
+                },
+                onError = { exception ->
+                    errorMessage.value = "Gagal mengambil data laporan: ${exception.message}"
+                }
+            )
+        }
     }
 
     Box(
@@ -85,8 +97,13 @@ fun WasteReportHistoryView(wasteReportViewModel: WasteReportViewModel = viewMode
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
+                    // Dropdown untuk memilih status laporan
                     DropdownExample(
-                        options = listOf("Diterima", "Pending"),
+                        options = listOf("Pending", "Diterima"),
+                        selectedOption = currentFilter, // Gunakan currentFilter untuk menampilkan opsi aktif
+                        onOptionSelected = { filter ->
+                            wasteReportViewModel.setFilter(filter) // Set filter di ViewModel
+                        }
                     )
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -98,20 +115,17 @@ fun WasteReportHistoryView(wasteReportViewModel: WasteReportViewModel = viewMode
 
                 // Menampilkan laporan jika data tersedia
                 LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(wasteReports.value.size) { index ->
+                    items(wasteReports.size) { index ->
                         WasteReportCard(
                             modifier = Modifier.fillMaxWidth(),
-                            wasteReport = wasteReports.value[index]
+                            wasteReport = wasteReports[index],
+                            onClick = {
+                                navController.navigate("detail/${wasteReports[index].id}")
+                            }
                         )
                     }
                 }
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable()
-fun WasteReportHistoryViewPreview(){
-    WasteReportHistoryView()
 }

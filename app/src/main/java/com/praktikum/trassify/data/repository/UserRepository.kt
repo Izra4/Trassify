@@ -1,0 +1,93 @@
+package com.praktikum.trassify.data.repository
+
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.praktikum.trassify.data.model.User
+import com.praktikum.trassify.utils.formatTimestamp
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
+
+// repository/UserRepository.kt
+class UserRepository(
+    private val database: FirebaseDatabase = FirebaseDatabase.getInstance(),
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+) {
+    private val usersRef = database.getReference("users")
+
+    suspend fun createOrUpdateUser(firebaseUser: FirebaseUser): User {
+        val user = User(
+            id = firebaseUser.uid,
+            email = firebaseUser.email ?: "",
+            name = firebaseUser.displayName ?: "",
+            imageUrl = firebaseUser.photoUrl?.toString() ?: "",
+            timestamp = formatTimestamp(System.currentTimeMillis())
+        )
+
+        return try {
+            // Cek apakah user sudah ada
+            val existingUser = getUserById(user.id)
+            if (existingUser == null) {
+                // User baru, simpan semua data
+                usersRef.child(user.id).setValue(user).await()
+                user
+            } else {
+                // Update lastLogin dan data yang mungkin berubah
+                val updates = mapOf(
+                    "timestamp" to user.timestamp,
+                    "email" to user.email,
+                    "name" to user.name,
+                    "imageUrl" to user.imageUrl
+                )
+                usersRef.child(user.id).updateChildren(updates).await()
+                existingUser.copy(
+                    timestamp = user.timestamp,
+                    email = user.email,
+                    name = user.name,
+                    imageUrl = user.imageUrl
+                )
+            }
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    suspend fun getUserById(uid: String): User? {
+        return try {
+            val snapshot = usersRef.child(uid).get().await()
+            snapshot.getValue(User::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    suspend fun deleteUser(uid: String) {
+        try {
+            usersRef.child(uid).removeValue().await()
+        } catch (e: Exception) {
+            throw e
+        }
+    }
+
+    fun observeUserChanges(uid: String): Flow<User?> = callbackFlow {
+        val listener = usersRef.child(uid).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val user = snapshot.getValue(User::class.java)
+                trySend(user)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                close(error.toException())
+            }
+        })
+
+        awaitClose {
+            usersRef.child(uid).removeEventListener(listener)
+        }
+    }
+}
