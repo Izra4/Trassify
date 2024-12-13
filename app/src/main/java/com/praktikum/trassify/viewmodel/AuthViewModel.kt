@@ -14,12 +14,16 @@ import kotlinx.coroutines.launch
 import androidx.credentials.*
 import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.praktikum.trassify.R
 
 class AuthViewModel(private val auth: FirebaseAuth) : ViewModel() {
 
     var currentUser: FirebaseUser? = null
         private set
+
+    private val database: DatabaseReference = FirebaseDatabase.getInstance("https://papb-trassify-default-rtdb.asia-southeast1.firebasedatabase.app").reference
 
     fun signInWithGoogle(credentialManager: CredentialManager, navController: NavController, context: android.content.Context) {
         val googleIdOption = GetGoogleIdOption.Builder()
@@ -56,13 +60,16 @@ class AuthViewModel(private val auth: FirebaseAuth) : ViewModel() {
         }
     }
 
+
     private fun firebaseAuthWithGoogle(idToken: String, navController: NavController) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Log.d(TAG, "signInWithCredential:success")
+                    Log.d(TAG, "signInWithCredential:successz")
                     updateUser(auth.currentUser)
+                    createUserInDatabase(auth.currentUser)
+                    Log.d(TAG, "Udah create ini")
                     navController.navigate("dashboard") {
                         popUpTo("login") { inclusive = true }
                     }
@@ -71,6 +78,35 @@ class AuthViewModel(private val auth: FirebaseAuth) : ViewModel() {
                     updateUser(null)
                 }
             }
+    }
+
+    private fun createUserInDatabase(user: FirebaseUser?) {
+        user?.let {
+            val userId = user.uid
+            val userRef = database.child("users").child(userId)
+            Log.d(TAG, "masuk ga yaaa: $userId, $database")
+            userRef.get().addOnSuccessListener { snapshot ->
+                Log.d(TAG, "Snapshot exists: ${snapshot.exists()}")
+                if (!snapshot.exists()) {
+                    val userMap = mapOf(
+                        "uid" to user.uid,
+                        "email" to user.email,
+                        "displayName" to user.displayName,
+                        "photoUrl" to user.photoUrl?.toString()
+                    )
+                    userRef.setValue(userMap)
+                        .addOnCompleteListener { dbTask ->
+                            if (dbTask.isSuccessful) {
+                                Log.d(TAG, "User successfully added to database")
+                            } else {
+                                Log.w(TAG, "Error adding user to database", dbTask.exception)
+                            }
+                        }
+                }
+            }.addOnFailureListener { exception ->
+                Log.e(TAG, "Failed to retrieve data", exception)
+            }
+        }
     }
 
     fun signOut(credentialManager: CredentialManager, navController: NavController) {

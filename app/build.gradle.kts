@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.androidx.camera.core)
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
+    implementation(libs.firebase.database)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -72,27 +73,20 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-
-    implementation("androidx.navigation:navigation-compose:2.6.0")
-
-    implementation("com.google.android.gms:play-services-auth:21.2.0")
-    implementation("androidx.credentials:credentials:1.2.2")
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
-    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-
-    implementation("androidx.camera:camera-core:1.4.0")
-    implementation("androidx.camera:camera-camera2:1.4.0")
-    implementation("androidx.camera:camera-lifecycle:1.4.0")
-    implementation("androidx.camera:camera-view:1.4.0")
-    implementation("androidx.camera:camera-extensions:1.4.0")
-
-    implementation("androidx.compose.material:material-icons-extended:1.7.5")
-
-    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
-
-    implementation("io.coil-kt:coil-compose:2.7.0")
-
-    implementation ("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.navigation.compose.v260)
+    implementation(libs.play.services.auth.v2130)
+    implementation(libs.androidx.credentials.v122)
+    implementation(libs.androidx.credentials.play.services.auth.v122)
+    implementation(libs.googleid)
+    implementation(libs.androidx.camera.core.v141)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle.v141)
+    implementation(libs.androidx.camera.view.v141)
+    implementation(libs.androidx.camera.extensions)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.accompanist.permissions)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.coil.compose)
+    implementation (libs.androidx.core.splashscreen)
 
 }
