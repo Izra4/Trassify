@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "463979944847",
+    "project_id": "trassify",
+    "storage_bucket": "trassify.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:463979944847:android:b384e22bb5eb20bbb889fa",
+        "android_client_info": {
+          "package_name": "com.praktikum.trassify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUIVzu-gX4A6buwVPOUEpvFtD3JlTnGWg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

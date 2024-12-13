@@ -2,4 +2,6 @@
     <string name="app_name">Trassify</string>
     <string name="title_activity_camerax">CameraxActivity</string>
     <string name="title_activity_schedule">ScheduleActivity</string>
+    <string name="supabase_key">https://rcgkqlwngainerhfsdqu.supabase.co</string>
+    <string name="supabase_url">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjZ2txbHduZ2FpbmVyaGZzZHF1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzIxODk1ODgsImV4cCI6MjA0Nzc2NTU4OH0.wr6YPGemb5v1JJGtk4cxNU_nv5F2Ox4k_F522yQOoUM</string>
 </resources>

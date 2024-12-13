@@ -17,11 +17,13 @@ import androidx.lifecycle.ViewModel
 import com.praktikum.trassify.model.CameraRepository
 
 class CameraViewModel(private val cameraRepository: CameraRepository) : ViewModel() {
-    val cameraPermissionGranted = mutableStateOf(false)
+    // Menyimpan status izin akses kamera
+    private val _cameraPermissionGranted = mutableStateOf(false)
+    val cameraPermissionGranted: State<Boolean> = _cameraPermissionGranted
 
     // Fungsi untuk mengupdate status izin kamera
-    fun setCameraPermissionGranted(granted: Boolean) {
-        cameraPermissionGranted.value = granted
+    fun updateCameraPermission(granted: Boolean) {
+        _cameraPermissionGranted.value = granted
     }
 
     private val _lensFacing = mutableStateOf(CameraSelector.LENS_FACING_BACK)
@@ -30,6 +32,7 @@ class CameraViewModel(private val cameraRepository: CameraRepository) : ViewMode
     private val _imageUri = mutableStateOf<Uri?>(null)
     val imageUri: State<Uri?> = _imageUri
 
+    // Fungsi untuk mengganti kamera (depan/belakang)
     fun switchCamera() {
         _lensFacing.value = if (_lensFacing.value == CameraSelector.LENS_FACING_BACK) {
             CameraSelector.LENS_FACING_FRONT
@@ -38,10 +41,12 @@ class CameraViewModel(private val cameraRepository: CameraRepository) : ViewMode
         }
     }
 
+    // Fungsi untuk mengupdate URI gambar yang dipilih atau diambil
     fun setImageUri(uri: Uri?) {
         _imageUri.value = uri
     }
 
+    // Setup kamera menggunakan CameraX
     suspend fun setupCamera(
         lifecycleOwner: LifecycleOwner,
         context: Context,
@@ -51,25 +56,26 @@ class CameraViewModel(private val cameraRepository: CameraRepository) : ViewMode
         val cameraProvider = cameraRepository.getCameraProvider()
         cameraProvider.unbindAll()
 
-        val cameraxSelector = CameraSelector.Builder()
+        val cameraSelector = CameraSelector.Builder()
             .requireLensFacing(_lensFacing.value)
             .build()
 
         cameraProvider.bindToLifecycle(
             lifecycleOwner,
-            cameraxSelector,
+            cameraSelector,
             preview,
             imageCapture
         )
     }
 
+    // Fungsi untuk menangkap gambar dari kamera
     fun captureImage(imageCapture: ImageCapture, context: Context) {
-        val name = "CameraxImage_${System.currentTimeMillis()}.jpeg"
+        val name = "WasteImage_${System.currentTimeMillis()}.jpeg"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/CameraX-Image")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/Trasify-Image")
             }
         }
 
@@ -86,16 +92,13 @@ class CameraViewModel(private val cameraRepository: CameraRepository) : ViewMode
             ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                    // Update imageUri with the captured image URI
                     _imageUri.value = outputFileResults.savedUri
-                    println("Image saved: ${outputFileResults.savedUri}")
                 }
 
                 override fun onError(exception: ImageCaptureException) {
-                    println("Capture failed: $exception")
+                    println("Capture failed: ${exception.message}")
                 }
             }
         )
     }
 }
-
