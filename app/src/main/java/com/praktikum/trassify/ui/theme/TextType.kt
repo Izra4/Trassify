@@ -7,6 +7,22 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.sp
 
 object TextType{
+    val text20Bold = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mont_bold)),
+        fontSize = 20.sp
+    )
+
+    val text13Bold = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mont_bold)),
+        fontSize = 13.sp,
+        letterSpacing = 1.5.sp
+    )
+
+    val text49SemiBold = TextStyle(
+        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontSize = 49.sp
+    )
+
     val text25SemiBold = TextStyle(
         fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
         fontSize = 25.sp
@@ -17,9 +33,15 @@ object TextType{
         fontSize = 20.sp
     )
 
+    val text18SemiBold = TextStyle(
+        fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
+        fontSize = 18.sp
+    )
+
     val text16SemiBold = TextStyle(
         fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
-        fontSize = 16.sp
+        fontSize = 16.sp,
+        letterSpacing = 1.5.sp
     )
 
     val text15SemiBold = TextStyle(
@@ -46,6 +68,11 @@ object TextType{
     val text5SemiBold = TextStyle(
         fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
         fontSize = 5.sp
+    )
+
+    val text24Md = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mont_md)),
+        fontSize = 24.sp
     )
 
     val text20Md = TextStyle(

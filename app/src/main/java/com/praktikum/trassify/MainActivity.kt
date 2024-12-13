@@ -1,4 +1,3 @@
-// MainActivity.kt
 package com.praktikum.trassify
 
 import android.os.Bundle
@@ -6,53 +5,52 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Button
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.credentials.ClearCredentialStateRequest
-import androidx.credentials.CredentialManager
-import androidx.credentials.CustomCredential
-import androidx.credentials.GetCredentialRequest
-import androidx.credentials.GetCredentialResponse
-import androidx.credentials.exceptions.GetCredentialException
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
-import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.auth
 import com.praktikum.trassify.ui.screens.LoginScreen
 import com.praktikum.trassify.ui.screens.DashboardScreen
+import com.praktikum.trassify.ui.screens.RegisterScreen
 import com.praktikum.trassify.ui.theme.TrassifyTheme
+import com.praktikum.trassify.view.WelcomeScreen
+import com.praktikum.trassify.ui.viewmodel.LoginViewModel
+import com.praktikum.trassify.ui.viewmodel.LoginViewModelFactory
 import kotlinx.coroutines.launch
+import androidx.credentials.CredentialManager
+import com.praktikum.trassify.R
 
 class MainActivity : ComponentActivity() {
+
     private lateinit var auth: FirebaseAuth
-    private var currentUser by mutableStateOf<FirebaseUser?>(null)
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        auth = Firebase.auth
+        auth = FirebaseAuth.getInstance()
+
+        loginViewModel = ViewModelProvider(this, LoginViewModelFactory(auth)).get(LoginViewModel::class.java)
 
         setContent {
             TrassifyTheme {
                 val navController = rememberNavController()
 
+                val currentUser = loginViewModel.currentUser
+
                 NavHost(
                     navController = navController,
-                    startDestination = if (currentUser != null) "dashboard" else "login"
+                    startDestination = if (currentUser != null) "dashboard" else "welcome"
                 ) {
                     composable("login") {
                         LoginScreen(
-                            onGoogleSignInClick = { signIn(navController) }
+                            navController = navController,
+                            onGoogleSignInClick = { signInWithGoogle(navController) }
                         )
                     }
                     composable("dashboard") {
@@ -61,90 +59,39 @@ class MainActivity : ComponentActivity() {
                             onSignOutClick = { signOut(navController) }
                         )
                     }
+                    composable("welcome") {
+                        WelcomeScreen(navController = navController)
+                    }
+                    composable("register") {
+                        RegisterScreen(
+                            navController = navController,
+                            onGoogleSignInClick = { signInWithGoogle(navController) }
+                        )
+                    }
                 }
             }
         }
     }
 
-    private fun signIn(navController: androidx.navigation.NavController) {
+    private fun signInWithGoogle(navController: NavController) {
         val credentialManager = CredentialManager.create(this)
 
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(getString(R.string.web_client_id))
-            .build()
-
-        val request = GetCredentialRequest.Builder()
-            .addCredentialOption(googleIdOption)
-            .build()
-
-        lifecycleScope.launch {
-            try {
-                val result = credentialManager.getCredential(
-                    request = request,
-                    context = this@MainActivity
-                )
-                handleSignIn(result, navController)
-            } catch (e: GetCredentialException) {
-                Log.e(TAG, "Error getting credential", e)
-            }
-        }
+        loginViewModel.signInWithGoogle(
+            credentialManager = credentialManager,
+            navController = navController,
+            context = this
+        )
     }
 
-    private fun handleSignIn(result: GetCredentialResponse, navController: androidx.navigation.NavController) {
-        when (val credential = result.credential) {
-            is CustomCredential -> {
-                if (credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
-                    try {
-                        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                        firebaseAuthWithGoogle(googleIdTokenCredential.idToken, navController)
-                    } catch (e: GoogleIdTokenParsingException) {
-                        Log.e(TAG, "Invalid google id token", e)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun firebaseAuthWithGoogle(idToken: String, navController: androidx.navigation.NavController) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    Log.d(TAG, "signInWithCredential:success")
-                    updateUI(auth.currentUser)
-                    navController.navigate("dashboard") {
-                        popUpTo("login") { inclusive = true }
-                    }
-                } else {
-                    Log.w(TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
-                }
-            }
-    }
-
-    private fun signOut(navController: androidx.navigation.NavController) {
+    private fun signOut(navController: NavController) {
         lifecycleScope.launch {
             val credentialManager = CredentialManager.create(this@MainActivity)
-            auth.signOut()
-            credentialManager.clearCredentialState(ClearCredentialStateRequest())
+            loginViewModel.signOut(credentialManager, navController)
         }
-        updateUI(null)
-        navController.navigate("login") {
-            popUpTo("dashboard") { inclusive = true }
-        }
-    }
-
-    private fun updateUI(user: FirebaseUser?) {
-        currentUser = user
     }
 
     override fun onStart() {
         super.onStart()
-        updateUI(auth.currentUser)
-    }
-
-    companion object {
-        private const val TAG = "MainActivity"
+        loginViewModel.updateUser(auth.currentUser)
     }
 }

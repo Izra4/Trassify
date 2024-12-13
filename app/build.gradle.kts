@@ -72,8 +72,27 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.play.services.auth)
-    implementation(libs.androidx.credentials)
-    implementation(libs.androidx.credentials.play.services.auth)
-    implementation(libs.googleid)
+
+
+    implementation("androidx.navigation:navigation-compose:2.6.0")
+
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+    implementation("androidx.credentials:credentials:1.2.2")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.2")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    implementation("androidx.camera:camera-core:1.4.0")
+    implementation("androidx.camera:camera-camera2:1.4.0")
+    implementation("androidx.camera:camera-lifecycle:1.4.0")
+    implementation("androidx.camera:camera-view:1.4.0")
+    implementation("androidx.camera:camera-extensions:1.4.0")
+
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
+
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
+    implementation ("androidx.core:core-splashscreen:1.0.1")
+
 }

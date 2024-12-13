@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseUser
-import com.praktikum.trassify.ui.theme.montserratFontFamily
+import com.praktikum.trassify.ui.theme.TextType
 
 @Composable
 fun DashboardScreen(
@@ -30,16 +30,12 @@ fun DashboardScreen(
     ) {
         Text(
             text = "Selamat datang,",
-            fontSize = 24.sp,
-            fontFamily = montserratFontFamily,
-            fontWeight = FontWeight.Normal
+            style = TextType.text24Md
         )
 
         Text(
             text = user?.displayName ?: "User",
-            fontSize = 28.sp,
-            fontFamily = montserratFontFamily,
-            fontWeight = FontWeight.Bold,
+            style = TextType.text24Md,
             modifier = Modifier.padding(bottom = 32.dp)
         )
 

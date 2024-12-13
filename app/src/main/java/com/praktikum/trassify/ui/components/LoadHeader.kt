@@ -14,7 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.praktikum.trassify.R
-import com.praktikum.trassify.ui.theme.montserratFontFamily
+import com.praktikum.trassify.ui.theme.TextType
 
 @Composable
 fun LoadHeader(text: String) {
@@ -27,9 +27,7 @@ fun LoadHeader(text: String) {
         )
         Text(
             text = text,
-            fontSize = 49.sp,
-            fontFamily = montserratFontFamily,
-            fontWeight = FontWeight.SemiBold,
+            style = TextType.text49SemiBold,
             lineHeight = 72.sp,
             color = Color.LightGray,
             modifier = Modifier.padding(45.dp, 65.dp, 0.dp, 0.dp)
