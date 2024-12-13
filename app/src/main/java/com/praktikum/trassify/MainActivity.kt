@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,17 +51,18 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    // Launcher untuk memilih gambar dari galeri
-    private val pickImageLauncher by lazy {
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    // Moved pickImageLauncher initialization inside onCreate to avoid lifecycle issue
+    private lateinit var pickImageLauncher: ActivityResultLauncher<String>
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // Initialize pickImageLauncher here
+        pickImageLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             uri?.let {
                 cameraViewModel.setImageUri(it) // Update URI gambar di ViewModel
             }
         }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
 
         // Inisialisasi CameraViewModel
         val cameraRepository = CameraRepository(this)
@@ -101,6 +103,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 @Composable
 fun TrassifyApp(
