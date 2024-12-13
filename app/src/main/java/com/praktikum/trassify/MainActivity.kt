@@ -19,8 +19,8 @@ import com.praktikum.trassify.ui.screens.DashboardScreen
 import com.praktikum.trassify.ui.screens.RegisterScreen
 import com.praktikum.trassify.ui.theme.TrassifyTheme
 import com.praktikum.trassify.view.WelcomeScreen
-import com.praktikum.trassify.ui.viewmodel.LoginViewModel
-import com.praktikum.trassify.ui.viewmodel.LoginViewModelFactory
+import com.praktikum.trassify.ui.viewmodel.AuthViewModel
+import com.praktikum.trassify.ui.viewmodel.AuthViewModelFactory
 import kotlinx.coroutines.launch
 import androidx.credentials.CredentialManager
 import com.praktikum.trassify.R
@@ -28,14 +28,14 @@ import com.praktikum.trassify.R
 class MainActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var loginViewModel: LoginViewModel
+    private lateinit var loginViewModel: AuthViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         auth = FirebaseAuth.getInstance()
 
-        loginViewModel = ViewModelProvider(this, LoginViewModelFactory(auth)).get(LoginViewModel::class.java)
+        loginViewModel = ViewModelProvider(this, AuthViewModelFactory(auth)).get(AuthViewModel::class.java)
 
         setContent {
             TrassifyTheme {

@@ -16,7 +16,7 @@ import androidx.credentials.exceptions.GetCredentialException
 import androidx.lifecycle.ViewModelProvider
 import com.praktikum.trassify.R
 
-class LoginViewModel(private val auth: FirebaseAuth) : ViewModel() {
+class AuthViewModel(private val auth: FirebaseAuth) : ViewModel() {
 
     var currentUser: FirebaseUser? = null
         private set
@@ -93,8 +93,8 @@ class LoginViewModel(private val auth: FirebaseAuth) : ViewModel() {
     }
 }
 
-class LoginViewModelFactory(private val auth: FirebaseAuth) : ViewModelProvider.Factory {
+class AuthViewModelFactory(private val auth: FirebaseAuth) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return LoginViewModel(auth) as T
+        return AuthViewModel(auth) as T
     }
 }
