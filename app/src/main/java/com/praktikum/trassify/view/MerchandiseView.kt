@@ -31,17 +31,23 @@ import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.White
 import com.praktikum.trassify.viewmodel.MerchandiseViewModel
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.praktikum.trassify.composables.skeletons.MerchandiseSkeleton
 import com.praktikum.trassify.composables.skeletons.ProfileSkeleton
 import com.praktikum.trassify.data.Response
 
 @Composable()
-fun MerchandiseView(viewModel: MerchandiseViewModel){
+fun MerchandiseView(viewModel: MerchandiseViewModel, navController: NavController){
     val profileState by viewModel.userProfile.collectAsState()
     val merchandisesState by viewModel.merchandises.collectAsState()
 
+    // Mendapatkan userId dari FirebaseAuth
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userId = currentUser?.uid
+
     LaunchedEffect(Unit) {
-        viewModel.userProfile("xXifaScBL6ZNjJDW97P0exSeDDi2")
+        viewModel.userProfile(userId!!)
         viewModel.getAllMerchandise()
     }
     Box(
@@ -108,8 +114,12 @@ fun MerchandiseView(viewModel: MerchandiseViewModel){
                                 MerchandiseCard(
                                     title = merchandise.name,
                                     image = merchandise.imageUrl,
-                                    point = merchandise.pointRequired,
-                                    exchange = merchandise.claimed
+                                    point = merchandise.points,
+                                    exchange = merchandise.redeemedCount,
+                                    onClick = {
+                                        navController.navigate("merchandise/${merchandise.id}")
+                                    }
+
                                 )
                             }
                         }

@@ -2,6 +2,7 @@ package com.praktikum.trassify.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,8 @@ fun ArticleCard(
     title : String,
     content : String,
     image : String,
+    onClick: () -> Unit
+
 ) {
     Box(
         modifier = Modifier
@@ -38,6 +41,8 @@ fun ArticleCard(
             .height(126.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(White)
+            .clickable(onClick = onClick)
+
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -72,4 +77,3 @@ fun ArticleCard(
         }
     }
 }
-

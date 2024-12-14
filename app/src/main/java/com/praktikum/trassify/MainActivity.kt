@@ -103,6 +103,11 @@ class MainActivity : ComponentActivity() {
             MerchandiseViewModelFactory(userRepository, merchandiseRepository)
         )[MerchandiseViewModel::class.java]
 
+        articleViewModel = ViewModelProvider(
+            this,
+            ArticleViewModelFactory(articleRepository)
+        )[ArticleViewModel::class.java]
+
         // Inisialisasi CameraViewModel
         val cameraRepository = CameraRepository(this)
         cameraViewModel = ViewModelProvider(
@@ -149,7 +154,9 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("dashboard") {
-                        DashboardView(viewModel = dashboardViewModel)
+                        DashboardView(
+                            viewModel = dashboardViewModel,
+                            navController = navController)
                     }
                     composable("welcome") {
                         WelcomeScreen(navController = navController)
@@ -169,6 +176,7 @@ class MainActivity : ComponentActivity() {
                             scheduleViewModel = scheduleViewModel,
                             merchandiseViewModel = merchandiseViewModel,
                             wasteReportViewModel = wasteReportViewModel,
+                            articleViewModel = articleViewModel,
                             onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
                             onPickImage = { pickImageLauncher.launch("image/*")}
                         )
@@ -182,6 +190,21 @@ class MainActivity : ComponentActivity() {
                             scheduleViewModel = scheduleViewModel,
                             merchandiseViewModel = merchandiseViewModel,
                             wasteReportViewModel = wasteReportViewModel,
+                            articleViewModel = articleViewModel,
+                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
+                            onPickImage = { pickImageLauncher.launch("image/*")}
+                        )
+                    }
+                    composable("article") {
+                        TrassifyApp(
+                            navController = navController,
+                            dashboardViewModel = dashboardViewModel,
+                            bottomNavViewModel = bottomNavViewModel,
+                            cameraViewModel = cameraViewModel,
+                            scheduleViewModel = scheduleViewModel,
+                            merchandiseViewModel = merchandiseViewModel,
+                            wasteReportViewModel = wasteReportViewModel,
+                            articleViewModel = articleViewModel,
                             onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
                             onPickImage = { pickImageLauncher.launch("image/*")}
                         )
@@ -195,6 +218,7 @@ class MainActivity : ComponentActivity() {
                             scheduleViewModel = scheduleViewModel,
                             merchandiseViewModel = merchandiseViewModel,
                             wasteReportViewModel = wasteReportViewModel,
+                            articleViewModel = articleViewModel,
                             onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
                             onPickImage = { pickImageLauncher.launch("image/*")}
                         )
@@ -224,6 +248,7 @@ class MainActivity : ComponentActivity() {
                             scheduleViewModel = scheduleViewModel,
                             merchandiseViewModel = merchandiseViewModel,
                             wasteReportViewModel = wasteReportViewModel,
+                            articleViewModel = articleViewModel,
                             onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
                             onPickImage = { pickImageLauncher.launch("image/*")}
                         )
@@ -237,6 +262,32 @@ class MainActivity : ComponentActivity() {
                             reportId = reportId,
                             wasteReportViewModel = wasteReportViewModel
                         )
+                    }
+                    composable(
+                        route = "merchandise/{merchandiseId}",
+                        arguments = listOf(navArgument("merchandiseId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val merchandiseId = backStackEntry.arguments?.getString("merchandiseId")
+                        // Pastikan merchandiseId tidak null sebelum menggunakan
+                        if (merchandiseId != null) {
+                            MerchandiseDetailScreen(
+                                merchId = merchandiseId,
+                                viewModel = merchandiseViewModel // Pastikan viewModel sudah terintegrasi
+                            )
+                        }
+                    }
+                    composable(
+                        route = "article/{articleId}",
+                        arguments = listOf(navArgument("articleId") { type = NavType.StringType })
+                    ) { backStackEntry ->
+                        val merchandiseId = backStackEntry.arguments?.getString("articleId")
+                        // Pastikan merchandiseId tidak null sebelum menggunakan
+                        if (merchandiseId != null) {
+                            ArticleDetailScreen(
+                                articleId = merchandiseId,
+                                viewModel = articleViewModel // Pastikan viewModel sudah terintegrasi
+                            )
+                        }
                     }
                 }
             }
@@ -266,6 +317,7 @@ fun TrassifyApp(
     cameraViewModel: CameraViewModel,
     merchandiseViewModel: MerchandiseViewModel,
     wasteReportViewModel: WasteReportViewModel,
+    articleViewModel: ArticleViewModel,
     onRequestCameraPermission: () -> Unit,
     onPickImage: () -> Unit,
     scheduleViewModel: ScheduleViewModel
@@ -284,9 +336,8 @@ fun TrassifyApp(
                         when (index) {
                             0 -> navController.navigate("home")
                             1 -> navController.navigate("schedule")
-                            2 -> navController.navigate("camera")
-                            3 -> navController.navigate("article")
-                            4 -> navController.navigate("merchandise")
+                            2 -> navController.navigate("article")
+                            3 -> navController.navigate("merchandise")
                         }
                     },
                     onCameraClick = {
@@ -300,7 +351,9 @@ fun TrassifyApp(
         Box(modifier = Modifier.padding(innerPadding)) {
             // Menampilkan konten sesuai dengan halaman yang sedang aktif
             when (currentRoute?.destination?.route) {
-                "home" -> DashboardView(viewModel = dashboardViewModel)
+                "home" -> DashboardView(
+                    viewModel = dashboardViewModel,
+                    navController = navController)
                 "schedule" -> ScheduleView(scheduleViewModel)
                 "camera" -> CameraPreviewScreen(
                     navController = navController,
@@ -308,7 +361,10 @@ fun TrassifyApp(
                     onRequestCameraPermission = onRequestCameraPermission,
                     onPickImage = onPickImage
                 )
-                "merchandise" -> MerchandiseView(merchandiseViewModel)
+                "article" -> ArticleScreen(navController,articleViewModel)
+                "merchandise" -> MerchandiseView(
+                    merchandiseViewModel,
+                    navController)
                 "reportWasteHistory" -> WasteReportHistoryView(
                     navController = navController,
                     wasteReportViewModel = wasteReportViewModel

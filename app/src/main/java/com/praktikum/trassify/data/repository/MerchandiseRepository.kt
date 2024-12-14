@@ -34,4 +34,20 @@ class MerchandiseRepository(
             Response.Error(e.message ?: "An unknown error occurred")
         }
     }
+
+    suspend fun getMerchandiseDetail(merchId: String): Response<Merchandise> {
+        return try {
+            // Ambil snapshot dari node "merchandise" berdasarkan ID
+            val snapshot = merchandiseRef.child(merchId).get().await()
+            val merchandise = snapshot.getValue<Merchandise>()
+
+            if (merchandise == null) {
+                Response.Error("Merchandise not found")
+            } else {
+                Response.Success(merchandise)
+            }
+        } catch (e: Exception) {
+            Response.Error(e.message ?: "An unknown error occurred")
+        }
+    }
 }

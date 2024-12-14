@@ -82,7 +82,7 @@ fun BottomNavBar(
                 icon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_newspaper),
-                        contentDescription = "Berita",
+                        contentDescription = "Camera",
                         tint = if (selectedIndex == 2) purpleColor else grayColor
                     )
                 }
@@ -95,7 +95,7 @@ fun BottomNavBar(
                 icon = {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_store),
-                        contentDescription = "Merchandise",
+                        contentDescription = "Article",
                         tint = if (selectedIndex == 3) purpleColor else grayColor
                     )
                 }

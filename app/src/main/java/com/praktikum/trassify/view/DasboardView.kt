@@ -32,6 +32,7 @@ import com.praktikum.trassify.composables.ScheduleCard
 import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.viewmodel.DashboardViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.praktikum.trassify.composables.Skeleton
 import com.praktikum.trassify.composables.skeletons.ArticleSkeleton
@@ -42,7 +43,7 @@ import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.viewmodel.DashboardViewModelFactory
 
 @Composable()
-fun DashboardView(viewModel: DashboardViewModel) {
+fun DashboardView(viewModel: DashboardViewModel, navController: NavController) {
     val profileState by viewModel.userProfile.collectAsState()
     val merchandisesState by viewModel.merchandises.collectAsState()
     val articlesState by viewModel.articles.collectAsState()
@@ -133,11 +134,14 @@ fun DashboardView(viewModel: DashboardViewModel) {
             when(val state = articlesState) {
                 is Response.Success -> {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        items(state.data) { article -> 
+                        items(state.data) { article ->
                             ArticleCard(
                                 title = article.title,
                                 image = article.imageUrl,
-                                content = article.content
+                                content = article.content,
+                                onClick = {
+                                    navController.navigate("article/${article.id}")
+                                }
                             )
                         }
                     }
@@ -174,8 +178,11 @@ fun DashboardView(viewModel: DashboardViewModel) {
                             MerchandiseCard(
                                 title = merchandise.name,
                                 image = merchandise.imageUrl,
-                                point = merchandise.pointRequired,
-                                exchange = merchandise.claimed
+                                point = merchandise.points,
+                                exchange = merchandise.redeemedCount,
+                                onClick = {
+                                    navController.navigate("merchandise/${merchandise.id}")
+                                }
                             )
                         }
                     }

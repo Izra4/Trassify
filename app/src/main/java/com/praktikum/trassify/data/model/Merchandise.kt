@@ -3,10 +3,9 @@ package com.praktikum.trassify.data.model
 data class Merchandise(
     val id: String = "",
     val name: String = "",
-    val imageUrl: String = "",
     val description: String = "",
-    val pointRequired: Int = 0,
-    val claimed: Int = 0,
-    val stock: Int = 0,
-    val timestamp: String = ""
+    val imageUrl: String = "",
+    val points: Int = 0,
+    val redeemedCount: Int = 0,
+    val reviews: Map<String, Review> = emptyMap() // Menyimpan review sebagai map dengan key berupa ID reviewer
 )

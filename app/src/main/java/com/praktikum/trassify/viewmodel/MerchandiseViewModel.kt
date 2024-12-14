@@ -32,6 +32,8 @@ class MerchandiseViewModel(
         MutableStateFlow(Response.Idle)
     val merchandises: StateFlow<Response<List<Merchandise>>> = _merchandises
 
+    private val _merchandiseDetail: MutableStateFlow<Response<Merchandise>> = MutableStateFlow(Response.Idle)
+    val merchandiseDetail: StateFlow<Response<Merchandise>> = _merchandiseDetail
 
     fun userProfile(userId: String) {
         viewModelScope.launch {
@@ -47,6 +49,14 @@ class MerchandiseViewModel(
             _merchandises.value = Response.Loading
             val response = merchandiseRepository.getAllMarchendise()
             _merchandises.value = response
+        }
+    }
+
+    fun fetchMerchDetail(merchId: String) {
+        viewModelScope.launch {
+            _merchandiseDetail.value = Response.Loading
+            val response = merchandiseRepository.getMerchandiseDetail(merchId)
+            _merchandiseDetail.value = response
         }
     }
 }
