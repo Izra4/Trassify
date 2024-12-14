@@ -29,10 +29,11 @@ import com.praktikum.trassify.ui.theme.TextType
 @Composable
 fun DropdownExample(
     options: List<String>,
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options.firstOrNull() ?: "") }
 
     Box(
         modifier = modifier
@@ -44,13 +45,7 @@ fun DropdownExample(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(50))
                 .background(Color(0xFF7C66FF))
-                .clickable {
-                    try {
-                        expanded = !expanded
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
+                .clickable { expanded = !expanded }
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -85,12 +80,8 @@ fun DropdownExample(
                         )
                     },
                     onClick = {
-                        try {
-                            selectedOption = option
-                            expanded = false
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                        onOptionSelected(option)  // Notify parent composable about the selection
+                        expanded = false
                     }
                 )
             }
