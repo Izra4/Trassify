@@ -18,12 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.praktikum.trassify.ui.theme.TextType
-import com.praktikum.trassify.viewmodel.ArticleDetailViewModel
+import com.praktikum.trassify.viewmodel.ArticleViewModel
 
 @Composable
 fun ArticleDetailScreen(
     articleId: String,
-    viewModel: ArticleDetailViewModel = viewModel()
+    viewModel: ArticleViewModel = viewModel()
 ) {
     val article by viewModel.articleDetail.collectAsState(initial = null)
 

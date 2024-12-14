@@ -33,21 +33,27 @@ import com.praktikum.trassify.composables.ScheduleCard
 import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.viewmodel.DashboardViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.praktikum.trassify.composables.Skeleton
 import com.praktikum.trassify.composables.skeletons.ArticleSkeleton
 import com.praktikum.trassify.composables.skeletons.MerchandiseSkeleton
 import com.praktikum.trassify.composables.skeletons.ProfileSkeleton
 import com.praktikum.trassify.data.Response
+import com.praktikum.trassify.viewmodel.DashboardViewModelFactory
 
 @Composable()
-fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardViewModel.Factory(LocalContext.current))){
+fun DashboardView(viewModel: DashboardViewModel) {
     val profileState by viewModel.userProfile.collectAsState()
     val merchandisesState by viewModel.merchandises.collectAsState()
     val articlesState by viewModel.articles.collectAsState()
     val schedulesState by viewModel.schedules.collectAsState()
 
+    // Mendapatkan userId dari FirebaseAuth
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userId = currentUser?.uid
+
     LaunchedEffect(Unit) {
-        viewModel.userProfile("xXifaScBL6ZNjJDW97P0exSeDDi2")
+        viewModel.userProfile(userId!!)
         viewModel.getAllMerchandise()
         viewModel.getAllArticle()
         viewModel.getAllSchedules()

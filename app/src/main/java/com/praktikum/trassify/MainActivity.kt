@@ -22,18 +22,17 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.praktikum.trassify.data.repository.ArticleRepository
 import com.praktikum.trassify.data.repository.CameraRepository
+import com.praktikum.trassify.data.repository.MerchandiseRepository
+import com.praktikum.trassify.data.repository.ScheduleRepository
 import com.praktikum.trassify.data.repository.UserRepository
 import com.praktikum.trassify.data.repository.WasteReportRepository
-import com.praktikum.trassify.data.model.Article
-import com.praktikum.trassify.data.model.Merchandise
-import com.praktikum.trassify.data.model.Schedule
 import com.praktikum.trassify.ui.screens.DashboardScreen
 import com.praktikum.trassify.ui.screens.LoginScreen
 import com.praktikum.trassify.ui.screens.RegisterScreen
 import com.praktikum.trassify.view.WelcomeScreen
 import com.praktikum.trassify.ui.theme.TrassifyTheme
-import com.praktikum.trassify.utils.formatTimestamp
 import com.praktikum.trassify.view.*
 import com.praktikum.trassify.viewmodel.*
 import kotlinx.coroutines.launch
@@ -42,7 +41,12 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var userRepository: UserRepository
+    private lateinit var articleRepository: ArticleRepository
+    private lateinit var merchandiseRepository: MerchandiseRepository
+    private lateinit var scheduleRepository: ScheduleRepository
     private lateinit var authViewModel: AuthViewModel
+    private lateinit var articleViewModel: ArticleViewModel
+    private lateinit var dashboardViewModel: DashboardViewModel
     private lateinit var cameraViewModel: CameraViewModel
     private lateinit var locationViewModel: LocationViewModel
     private lateinit var bottomNavViewModel: BottomNavViewModel
@@ -57,7 +61,29 @@ class MainActivity : ComponentActivity() {
 
         // Inisialisasi Firebase dan UserRepository
         auth = FirebaseAuth.getInstance()
-        userRepository = UserRepository(FirebaseDatabase.getInstance(), auth)
+        val database = FirebaseDatabase.getInstance().reference
+
+        userRepository = UserRepository(database, auth)
+
+        articleRepository = ArticleRepository(database = database)
+
+        merchandiseRepository = MerchandiseRepository(database)
+
+        scheduleRepository = ScheduleRepository(database)
+
+        // Buat factory menggunakan repository yang sudah ada
+        val dashboardFactory = DashboardViewModelFactory(
+            userRepository = userRepository,
+            articleRepository = articleRepository,
+            merchandiseRepository = merchandiseRepository,
+            scheduleRepository = scheduleRepository
+        )
+
+// Inisialisasi DashboardViewModel dengan factory
+        dashboardViewModel = ViewModelProvider(
+            this,
+            dashboardFactory
+        )[DashboardViewModel::class.java]
 
         // Inisialisasi AuthViewModel dengan UserRepository
         authViewModel = ViewModelProvider(
@@ -79,7 +105,7 @@ class MainActivity : ComponentActivity() {
         bottomNavViewModel = ViewModelProvider(this)[BottomNavViewModel::class.java]
 
         // Inisialisasi WasteReportViewModel
-        val wasteReportRepository = WasteReportRepository(FirebaseDatabase.getInstance().reference)
+        val wasteReportRepository = WasteReportRepository(database)
         val wasteReportViewModelFactory = WasteReportViewModelFactory(wasteReportRepository)
         wasteReportViewModel = ViewModelProvider(
             this,
@@ -94,9 +120,6 @@ class MainActivity : ComponentActivity() {
             // Handle picked image
         }
 
-        // Bagian Seeding Data Article dan Merchandise
-        seedScheduleData()
-
         setContent {
             TrassifyTheme {
                 val navController = rememberNavController()
@@ -104,7 +127,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = if (currentUser != null) "home" else "welcome"
+                    startDestination = if (currentUser != null) "home" else "login"
                 ) {
                     composable("login") {
                         LoginScreen(
@@ -114,10 +137,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("dashboard") {
-                        DashboardScreen(
-                            user = currentUser,
-                            onSignOutClick = { signOut(navController) }
-                        )
+                        DashboardView(viewModel = dashboardViewModel)
                     }
                     composable("welcome") {
                         WelcomeScreen(navController = navController)
@@ -131,12 +151,15 @@ class MainActivity : ComponentActivity() {
                     composable("home") {
                         TrassifyApp(
                             navController = navController,
-                            cameraViewModel = cameraViewModel,
+                            dashboardViewModel = dashboardViewModel,
                             bottomNavViewModel = bottomNavViewModel,
-                            wasteReportViewModel = wasteReportViewModel,
-                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
-                            onPickImage = { pickImageLauncher.launch("image/*") }
                         )
+                    }
+                    composable("schedule") {
+                        ScheduleView()
+                    }
+                    composable("merchandise") {
+                        MerchandiseView()
                     }
                     composable("camera") {
                         CameraPreviewScreen(
@@ -175,53 +198,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    /**
-     * Fungsi untuk melakukan seeding data articles dan merchandise
-     * ke Firebase Realtime Database.
-     */
-    private fun seedScheduleData() {
-        val db = FirebaseDatabase.getInstance().reference
-        val timestamp = formatTimestamp(System.currentTimeMillis())
-
-        val schedules = listOf(
-            Schedule(
-                id = "schedule1",
-                village = "Dinoyo",
-                subdistrict = "Lowokwaru",
-                timeStamp = timestamp
-            ),
-            Schedule(
-                id = "schedule2",
-                village = "Sukun",
-                subdistrict = "Sukun",
-                timeStamp = timestamp
-            ),
-            Schedule(
-                id = "schedule3",
-                village = "Bunulrejo",
-                subdistrict = "Blimbing",
-                timeStamp = timestamp
-            ),
-            Schedule(
-                id = "schedule4",
-                village = "Kauman",
-                subdistrict = "Klojen",
-                timeStamp = timestamp
-            ),
-            Schedule(
-                id = "schedule5",
-                village = "Tlogowaru",
-                subdistrict = "Kedungkandang",
-                timeStamp = timestamp
-            )
-        )
-
-        for (schedule in schedules) {
-            db.child("schedules").child(schedule.id).setValue(schedule)
-        }
-    }
-
-
     private fun signInWithGoogle(navController: NavController) {
         authViewModel.signInWithGoogle(
             credentialManager = credentialManager,
@@ -240,41 +216,39 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TrassifyApp(
     navController: NavController,
-    cameraViewModel: CameraViewModel,
+    dashboardViewModel: DashboardViewModel,
     bottomNavViewModel: BottomNavViewModel,
-    wasteReportViewModel: WasteReportViewModel,
-    onRequestCameraPermission: () -> Unit,
-    onPickImage: () -> Unit
 ) {
     val currentRoute by navController.currentBackStackEntryAsState()
 
     Scaffold(
         bottomBar = {
-            val isCameraSelected = currentRoute?.destination?.route == "camera"
-
             BottomNavBar(
                 selectedIndex = bottomNavViewModel.selectedIndex.intValue,
                 onItemSelected = { index ->
                     bottomNavViewModel.onItemSelected(index)
                     when (index) {
                         0 -> navController.navigate("home")
-                        1 -> navController.navigate("jadwal")
-                        2 -> navController.navigate("berita")
+                        1 -> navController.navigate("schedule")
+                        2 -> navController.navigate("camera")
                         3 -> navController.navigate("merchandise")
-                        4 -> navController.navigate("reportWasteHistory")
-                        5 -> navController.navigate("reportWaste")
                     }
-                },
-                isCameraSelected = isCameraSelected,
-                onCameraClick = {
-                    navController.navigate("camera")  // Navigasi ke halaman kamera
                 }
             )
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            // Tampilan konten halaman home
-            WasteReportHistoryView(navController, wasteReportViewModel)
+            // Tampilan konten utama dari halaman
+            when (currentRoute?.destination?.route) {
+                "home" -> DashboardView(viewModel = dashboardViewModel)
+                "schedule" -> ScheduleView() // Menampilkan ScheduleView
+                "camera" -> CameraPreviewScreen(
+                    navController = navController,
+                    viewModel = dashboardViewModel,
+                    onRequestCameraPermission = { },
+                    onPickImage = { }
+                )
+            }
         }
     }
 }

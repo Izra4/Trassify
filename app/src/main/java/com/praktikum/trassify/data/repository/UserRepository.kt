@@ -4,7 +4,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.data.model.User
@@ -15,12 +15,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 
-// repository/UserRepository.kt
 class UserRepository(
-    private val database: FirebaseDatabase = FirebaseDatabase.getInstance(),
+    private val database: DatabaseReference,
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 ) {
-    private val usersRef = database.getReference("users")
+    private val usersRef = database.child("users")
 
     suspend fun createOrUpdateUser(firebaseUser: FirebaseUser): User {
         val user = User(
@@ -35,11 +34,11 @@ class UserRepository(
             // Cek apakah user sudah ada
             val existingUser = getUserById(user.id)
             if (existingUser == null) {
-                // User baru, simpan semua data
+                // User baru
                 usersRef.child(user.id).setValue(user).await()
                 user
             } else {
-                // Update lastLogin dan data yang mungkin berubah
+                // Update data user yang ada
                 val updates = mapOf(
                     "timestamp" to user.timestamp,
                     "email" to user.email,

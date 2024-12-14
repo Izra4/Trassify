@@ -74,22 +74,42 @@ class DashboardViewModel(
         }
     }
 
-    companion object {
-        fun Factory(context: Context): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val userRepository = UserRepository()
-                val articleRepository = ArticleRepository()
-                val merchandiseRepository = MerchandiseRepository()
-                val scheduleRepository = ScheduleRepository()
-                DashboardViewModel(
-                    userRepository = userRepository,
-                    articleRepository = articleRepository,
-                    merchandiseRepository = merchandiseRepository,
-                    scheduleRepository = scheduleRepository
+//    companion object {
+//        fun Factory(context: Context): ViewModelProvider.Factory = viewModelFactory {
+//            initializer {
+//                val userRepository = UserRepository()
+//                val articleRepository = ArticleRepository()
+//                val merchandiseRepository = MerchandiseRepository()
+//                val scheduleRepository = ScheduleRepository()
+//                DashboardViewModel(
+//                    userRepository = userRepository,
+//                    articleRepository = articleRepository,
+//                    merchandiseRepository = merchandiseRepository,
+//                    scheduleRepository = scheduleRepository
+//
+//                )
+//            }
+//        }
+//    }
+}
 
-                )
-            }
+class DashboardViewModelFactory(
+    private val userRepository: UserRepository,
+    private val articleRepository: ArticleRepository,
+    private val merchandiseRepository: MerchandiseRepository,
+    private val scheduleRepository: ScheduleRepository
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(DashboardViewModel::class.java)) {
+            return DashboardViewModel(
+                userRepository = userRepository,
+                articleRepository = articleRepository,
+                merchandiseRepository = merchandiseRepository,
+                scheduleRepository = scheduleRepository
+            ) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
-
 }

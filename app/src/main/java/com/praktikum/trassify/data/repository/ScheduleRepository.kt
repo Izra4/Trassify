@@ -1,15 +1,29 @@
 package com.praktikum.trassify.data.repository
 
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.getValue
 import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.data.model.Schedule
-import com.praktikum.trassify.data.remote.FirebaseRemote
+import kotlinx.coroutines.tasks.await
 
-class ScheduleRepository {
+class ScheduleRepository(
+    private val database: DatabaseReference
+) {
+    private val schedulesRef = database.child("schedules")
+
     suspend fun getAllSchedules(): Response<List<Schedule>> {
         return try {
-            val schedules = FirebaseRemote.getAllData<Schedule>("schedules")
+            // Ambil snapshot dari node "schedules"
+            val snapshot = schedulesRef.get().await()
+            val schedules = mutableListOf<Schedule>()
+            for (child in snapshot.children) {
+                child.getValue<Schedule>()?.let {
+                    schedules.add(it)
+                }
+            }
+
             if (schedules.isEmpty()) {
-                Response.Error("merchandise is empty")
+                Response.Error("schedules is empty")
             } else {
                 Response.Success(schedules)
             }

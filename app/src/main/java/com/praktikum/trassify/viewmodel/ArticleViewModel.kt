@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class ArticleDetailViewModel(
-    private val repository: ArticleRepository = ArticleRepository()
+class ArticleViewModel(
+    private val repository: ArticleRepository
 ) : ViewModel() {
 
     private val _articleDetail = MutableStateFlow<Article?>(null)
