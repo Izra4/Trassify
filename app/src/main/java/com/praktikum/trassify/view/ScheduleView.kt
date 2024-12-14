@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.praktikum.trassify.composables.DropdownExample
@@ -37,13 +36,12 @@ import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.White
 import com.praktikum.trassify.viewmodel.ScheduleViewModel
 import androidx.compose.ui.platform.LocalContext
-import com.praktikum.trassify.composables.skeletons.MerchandiseSkeleton
 import com.praktikum.trassify.composables.skeletons.ScheduleSkeleton
 import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.utils.extractDateAndTime
 
 @Composable
-fun ScheduleView(viewModel: ScheduleViewModel = viewModel(factory = ScheduleViewModel.Factory(LocalContext.current))) {
+fun ScheduleView(viewModel: ScheduleViewModel) {
     val schedulesState by viewModel.schedules.collectAsState()
     val villagesState by viewModel.villages.collectAsState()
     val subdistrictsState by viewModel.subdistricts.collectAsState()

@@ -22,20 +22,18 @@ import kotlinx.coroutines.launch
 class MerchandiseViewModel(
     private val userRepository: UserRepository,
     private val merchandiseRepository: MerchandiseRepository,
-) : ViewModel(){
+) : ViewModel() {
 
 
     private val _userProfile: MutableStateFlow<Response<User?>> = MutableStateFlow(Response.Idle)
-    val userProfile : StateFlow<Response<User?>> = _userProfile
+    val userProfile: StateFlow<Response<User?>> = _userProfile
 
-    private val _merchandises: MutableStateFlow<Response<List<Merchandise>>> = MutableStateFlow(Response.Idle)
-    val merchandises : StateFlow<Response<List<Merchandise>>> = _merchandises
-
-
-
+    private val _merchandises: MutableStateFlow<Response<List<Merchandise>>> =
+        MutableStateFlow(Response.Idle)
+    val merchandises: StateFlow<Response<List<Merchandise>>> = _merchandises
 
 
-    fun userProfile(userId : String){
+    fun userProfile(userId: String) {
         viewModelScope.launch {
             _userProfile.value = Response.Loading
             val response = userRepository.getDashboardProfile(userId)
@@ -44,26 +42,28 @@ class MerchandiseViewModel(
     }
 
 
-    fun getAllMerchandise(){
+    fun getAllMerchandise() {
         viewModelScope.launch {
             _merchandises.value = Response.Loading
             val response = merchandiseRepository.getAllMarchendise()
             _merchandises.value = response
         }
     }
+}
 
+class MerchandiseViewModelFactory(
+    private val userRepository: UserRepository,
+    private val merchandiseRepository: MerchandiseRepository,
+) : ViewModelProvider.Factory {
 
-    companion object {
-        fun Factory(context: Context): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val userRepository = UserRepository()
-                val merchandiseRepository = MerchandiseRepository()
-                MerchandiseViewModel(
-                    userRepository = userRepository,
-                    merchandiseRepository = merchandiseRepository,
-                )
-            }
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(MerchandiseViewModel::class.java)) {
+            return MerchandiseViewModel(
+                userRepository = userRepository,
+                merchandiseRepository = merchandiseRepository,
+            ) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
-
 }

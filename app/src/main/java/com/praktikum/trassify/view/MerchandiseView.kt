@@ -36,7 +36,7 @@ import com.praktikum.trassify.composables.skeletons.ProfileSkeleton
 import com.praktikum.trassify.data.Response
 
 @Composable()
-fun MerchandiseView(viewModel: MerchandiseViewModel = viewModel(factory = MerchandiseViewModel.Factory(LocalContext.current))){
+fun MerchandiseView(viewModel: MerchandiseViewModel){
     val profileState by viewModel.userProfile.collectAsState()
     val merchandisesState by viewModel.merchandises.collectAsState()
 

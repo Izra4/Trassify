@@ -23,7 +23,8 @@ class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository
 ) : ViewModel() {
 
-    private val _schedules: MutableStateFlow<Response<List<Schedule>>> = MutableStateFlow(Response.Idle)
+    private val _schedules: MutableStateFlow<Response<List<Schedule>>> =
+        MutableStateFlow(Response.Idle)
     val schedules: StateFlow<Response<List<Schedule>>> = _schedules
 
     private val _villages: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
@@ -70,13 +71,20 @@ class ScheduleViewModel(
             _schedules.value = Response.Success(filteredSchedules)
         }
     }
+}
 
-    companion object {
-        fun Factory(context: Context): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val scheduleRepository = ScheduleRepository()
-                ScheduleViewModel(scheduleRepository = scheduleRepository)
-            }
+class ScheduleViewModelFactory(
+    private val scheduleRepository: ScheduleRepository
+) : ViewModelProvider.Factory {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        if (modelClass.isAssignableFrom(ScheduleViewModel::class.java)) {
+            return ScheduleViewModel(
+                scheduleRepository = scheduleRepository
+            ) as T
         }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

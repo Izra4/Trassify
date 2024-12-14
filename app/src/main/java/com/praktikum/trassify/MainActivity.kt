@@ -46,7 +46,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var scheduleRepository: ScheduleRepository
     private lateinit var authViewModel: AuthViewModel
     private lateinit var articleViewModel: ArticleViewModel
+    private lateinit var merchandiseViewModel: MerchandiseViewModel
     private lateinit var dashboardViewModel: DashboardViewModel
+    private lateinit var scheduleViewModel: ScheduleViewModel
     private lateinit var cameraViewModel: CameraViewModel
     private lateinit var locationViewModel: LocationViewModel
     private lateinit var bottomNavViewModel: BottomNavViewModel
@@ -90,6 +92,16 @@ class MainActivity : ComponentActivity() {
             this,
             AuthViewModelFactory(auth, userRepository)
         )[AuthViewModel::class.java]
+
+        scheduleViewModel = ViewModelProvider(
+            this,
+            ScheduleViewModelFactory(scheduleRepository)
+        )[ScheduleViewModel::class.java]
+
+        merchandiseViewModel = ViewModelProvider(
+            this,
+            MerchandiseViewModelFactory(userRepository, merchandiseRepository)
+        )[MerchandiseViewModel::class.java]
 
         // Inisialisasi CameraViewModel
         val cameraRepository = CameraRepository(this)
@@ -153,13 +165,39 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             dashboardViewModel = dashboardViewModel,
                             bottomNavViewModel = bottomNavViewModel,
+                            cameraViewModel = cameraViewModel,
+                            scheduleViewModel = scheduleViewModel,
+                            merchandiseViewModel = merchandiseViewModel,
+                            wasteReportViewModel = wasteReportViewModel,
+                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
+                            onPickImage = { pickImageLauncher.launch("image/*")}
                         )
                     }
                     composable("schedule") {
-                        ScheduleView()
+                        TrassifyApp(
+                            navController = navController,
+                            dashboardViewModel = dashboardViewModel,
+                            bottomNavViewModel = bottomNavViewModel,
+                            cameraViewModel = cameraViewModel,
+                            scheduleViewModel = scheduleViewModel,
+                            merchandiseViewModel = merchandiseViewModel,
+                            wasteReportViewModel = wasteReportViewModel,
+                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
+                            onPickImage = { pickImageLauncher.launch("image/*")}
+                        )
                     }
                     composable("merchandise") {
-                        MerchandiseView()
+                        TrassifyApp(
+                            navController = navController,
+                            dashboardViewModel = dashboardViewModel,
+                            bottomNavViewModel = bottomNavViewModel,
+                            cameraViewModel = cameraViewModel,
+                            scheduleViewModel = scheduleViewModel,
+                            merchandiseViewModel = merchandiseViewModel,
+                            wasteReportViewModel = wasteReportViewModel,
+                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
+                            onPickImage = { pickImageLauncher.launch("image/*")}
+                        )
                     }
                     composable("camera") {
                         CameraPreviewScreen(
@@ -178,9 +216,16 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("reportWasteHistory") {
-                        WasteReportHistoryView(
+                        TrassifyApp(
                             navController = navController,
-                            wasteReportViewModel = wasteReportViewModel
+                            dashboardViewModel = dashboardViewModel,
+                            bottomNavViewModel = bottomNavViewModel,
+                            cameraViewModel = cameraViewModel,
+                            scheduleViewModel = scheduleViewModel,
+                            merchandiseViewModel = merchandiseViewModel,
+                            wasteReportViewModel = wasteReportViewModel,
+                            onRequestCameraPermission = { cameraPermissionRequest.launch(Manifest.permission.CAMERA) },
+                            onPickImage = { pickImageLauncher.launch("image/*")}
                         )
                     }
                     composable(
@@ -218,37 +263,58 @@ fun TrassifyApp(
     navController: NavController,
     dashboardViewModel: DashboardViewModel,
     bottomNavViewModel: BottomNavViewModel,
+    cameraViewModel: CameraViewModel,
+    merchandiseViewModel: MerchandiseViewModel,
+    wasteReportViewModel: WasteReportViewModel,
+    onRequestCameraPermission: () -> Unit,
+    onPickImage: () -> Unit,
+    scheduleViewModel: ScheduleViewModel
 ) {
     val currentRoute by navController.currentBackStackEntryAsState()
 
     Scaffold(
         bottomBar = {
-            BottomNavBar(
-                selectedIndex = bottomNavViewModel.selectedIndex.intValue,
-                onItemSelected = { index ->
-                    bottomNavViewModel.onItemSelected(index)
-                    when (index) {
-                        0 -> navController.navigate("home")
-                        1 -> navController.navigate("schedule")
-                        2 -> navController.navigate("camera")
-                        3 -> navController.navigate("merchandise")
-                    }
-                }
-            )
+            // Menampilkan BottomNavBar hanya jika user sudah login
+            if (currentRoute?.destination?.route != "login" && currentRoute?.destination?.route != "register"
+                && currentRoute?.destination?.route != "camera") {
+                BottomNavBar(
+                    selectedIndex = bottomNavViewModel.selectedIndex.intValue,
+                    onItemSelected = { index ->
+                        bottomNavViewModel.onItemSelected(index)
+                        when (index) {
+                            0 -> navController.navigate("home")
+                            1 -> navController.navigate("schedule")
+                            2 -> navController.navigate("camera")
+                            3 -> navController.navigate("article")
+                            4 -> navController.navigate("merchandise")
+                        }
+                    },
+                    onCameraClick = {
+                        navController.navigate("camera")
+                    },
+                    isCameraSelected = currentRoute?.destination?.route == "camera"
+                )
+            }
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {
-            // Tampilan konten utama dari halaman
+            // Menampilkan konten sesuai dengan halaman yang sedang aktif
             when (currentRoute?.destination?.route) {
                 "home" -> DashboardView(viewModel = dashboardViewModel)
-                "schedule" -> ScheduleView() // Menampilkan ScheduleView
+                "schedule" -> ScheduleView(scheduleViewModel)
                 "camera" -> CameraPreviewScreen(
                     navController = navController,
-                    viewModel = dashboardViewModel,
-                    onRequestCameraPermission = { },
-                    onPickImage = { }
+                    viewModel = cameraViewModel,
+                    onRequestCameraPermission = onRequestCameraPermission,
+                    onPickImage = onPickImage
+                )
+                "merchandise" -> MerchandiseView(merchandiseViewModel)
+                "reportWasteHistory" -> WasteReportHistoryView(
+                    navController = navController,
+                    wasteReportViewModel = wasteReportViewModel
                 )
             }
         }
     }
 }
+

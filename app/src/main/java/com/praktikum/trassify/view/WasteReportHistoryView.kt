@@ -22,14 +22,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.praktikum.trassify.composables.DropdownExample
 import com.praktikum.trassify.composables.WasteReportCard
-import com.praktikum.trassify.data.model.WasteReport
 import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.White
 import com.praktikum.trassify.viewmodel.WasteReportViewModel

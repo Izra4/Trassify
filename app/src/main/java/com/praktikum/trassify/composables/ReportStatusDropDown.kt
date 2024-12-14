@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.praktikum.trassify.ui.theme.TextType
 
 @Composable
-fun DropdownExample(
+fun ReportStatusDropdownExample(
     options: List<String>,
     selectedOption: String,
     modifier: Modifier = Modifier,
