@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.praktikum.trassify.ui.theme.Primary10
@@ -83,7 +82,7 @@ fun ProfileCard(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Row (modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.End){
-                    MiniButton(onClick = { /*TODO*/ }, label = "Lihat Profile")
+                    MiniButton(onClick = { /*TODO*/ }, label = "Lihat Laporan")
                     Spacer(modifier = Modifier.width(4.dp))
                     MiniButton(onClick = { /*TODO*/ }, label = "Lihat Profile")
                 }
@@ -93,12 +92,3 @@ fun ProfileCard(
     }
 }
 
-@Preview(showBackground = true)
-@Composable()
-fun ProfileCardPreview(){
-    ProfileCard(
-        username = "testing",
-        image = "hh",
-        point = 100
-    )
-}

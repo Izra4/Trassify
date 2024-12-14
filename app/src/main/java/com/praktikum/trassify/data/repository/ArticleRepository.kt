@@ -5,12 +5,12 @@ package com.praktikum.trassify.data.repository
 import android.util.Log
 import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.data.model.Article
-import com.praktikum.trassify.data.remote.FirestoreRemote
+import com.praktikum.trassify.data.remote.FirebaseRemote
 
 class ArticleRepository{
     suspend fun getAllArticle(): Response<List<Article>> {
         return try {
-            val articles = FirestoreRemote.getAllData<Article>("articles")
+            val articles = FirebaseRemote.getAllData<Article>("articles")
             if (articles.isEmpty()) {
                 Response.Error("article is empty")
             } else {

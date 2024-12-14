@@ -24,13 +24,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.praktikum.trassify.ui.theme.Primary10
 import com.praktikum.trassify.R
+import com.praktikum.trassify.data.model.Schedule
 import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.White
+import com.praktikum.trassify.utils.extractDateAndTime
 
 @Composable()
 fun ScheduleCard(
+    schedule : Schedule,
     modifier: Modifier = Modifier
 ){
+    val (date, time) = extractDateAndTime(schedule.timeStamp)
     Box(
         modifier = modifier
             .width(320.dp)
@@ -57,13 +61,13 @@ fun ScheduleCard(
 
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Lowokwaru", style = TextType.text16SemiBold, color = White)
+                    Text(text = schedule.village, style = TextType.text16SemiBold, color = White)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "08:00 - 09:30", style = TextType.text12Md, color = White)
+                    Text(text = time, style = TextType.text12Md, color = White)
                 }
                 Spacer(modifier = Modifier.height(2.dp))
-                Text(text="Kelurahan Harapan jaya", style = TextType.text12Rg, color= White)
-                Text(text="Senin, 17 Agustus 2024", style = TextType.text10SemiBold, color = White, modifier = Modifier.align(Alignment.End).padding(top = 16.dp, bottom = 12.dp))
+                Text(text=schedule.subdistrict, style = TextType.text12Rg, color= White)
+                Text(text=date, style = TextType.text10SemiBold, color = White, modifier = Modifier.align(Alignment.End).padding(top = 16.dp, bottom = 12.dp))
             }
         }
     }

@@ -1,7 +1,12 @@
 package com.praktikum.trassify.data.model
 
 data class Article(
-    val title : String = "",
-    val image : String = "",
-    val content : String = ""
+    val id: String = "",
+    val title: String = "",
+    val imageUrl: String = "",
+    val content: String = "",
+    val timestamp: String = ""
 )
+
+
+

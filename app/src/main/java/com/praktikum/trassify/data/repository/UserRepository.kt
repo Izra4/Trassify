@@ -3,12 +3,12 @@ package com.praktikum.trassify.data.repository
 import android.util.Log
 import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.data.model.User
-import com.praktikum.trassify.data.remote.FirestoreRemote
+import com.praktikum.trassify.data.remote.FirebaseRemote
 
 class UserRepository{
     suspend fun getDashboardProfile(id: String): Response<User?> {
         return try {
-            val user = FirestoreRemote.getDataById<User>("users", id)
+            val user = FirebaseRemote.getDataById<User>("users", id)
             if (user != null) {
                 Response.Success(user)
             } else {

@@ -47,7 +47,7 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
     val schedulesState by viewModel.schedules.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.userProfile("abcde")
+        viewModel.userProfile("xXifaScBL6ZNjJDW97P0exSeDDi2")
         viewModel.getAllMerchandise()
         viewModel.getAllArticle()
         viewModel.getAllSchedules()
@@ -75,7 +75,7 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
                     }
                     is Response.Success -> {
                         val user = state.data
-                        Text(text = "Selamat Siang, ${user?.username}!", style = TextType.text25SemiBold, color = Color(0xFFDFDCF4))
+                        Text(text = "Selamat Siang, ${user?.name}!", style = TextType.text25SemiBold, color = Color(0xFFDFDCF4))
                     }
                     is Response.Error -> {
                         Text(
@@ -97,9 +97,9 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
                     is Response.Success -> {
                         val user = state.data
                         ProfileCard(
-                            username = user?.username ?: "Guest",
+                            username = user?.name ?: "Guest",
                             point = user?.point ?: 0,
-                            image = user?.image ?: ""
+                            image = user?.imageUrl ?: ""
                         )
                     }
                     is Response.Error -> {
@@ -130,7 +130,7 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
                         items(state.data) { article -> 
                             ArticleCard(
                                 title = article.title,
-                                image = article.image,
+                                image = article.imageUrl,
                                 content = article.content
                             )
                         }
@@ -166,10 +166,10 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data) { merchandise ->
                             MerchandiseCard(
-                                title = merchandise.title,
-                                image = merchandise.image,
-                                point = merchandise.point,
-                                exchange = merchandise.exchanged
+                                title = merchandise.name,
+                                image = merchandise.imageUrl,
+                                point = merchandise.pointRequired,
+                                exchange = merchandise.claimed
                             )
                         }
                     }
@@ -202,7 +202,9 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
                 is Response.Success -> {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(state.data) { schedules ->
-                            ScheduleCard()
+                            ScheduleCard(
+                                schedule = schedules
+                            )
                         }
                     }
                 }

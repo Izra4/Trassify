@@ -77,9 +77,9 @@ fun ScheduleView(){
                     Spacer(modifier = Modifier.height(8.dp))
                     LazyColumn (verticalArrangement = Arrangement.spacedBy(12.dp)){
                         items(10){
-                            ScheduleCard(
-                                modifier = Modifier.fillMaxWidth()
-                            )
+//                            ScheduleCard(
+//                                modifier = Modifier.fillMaxWidth()
+//                            )
                         }
                     }
                 }

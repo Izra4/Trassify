@@ -4,8 +4,8 @@ import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 
-object FirestoreRemote {
-    val db = FirebaseDatabase.getInstance("https://trassify-1378a-default-rtdb.asia-southeast1.firebasedatabase.app/").reference
+object FirebaseRemote {
+    val db = FirebaseDatabase.getInstance("https://trassify-default-rtdb.asia-southeast1.firebasedatabase.app/").reference
 
     suspend inline fun <reified T> getAllData(collectionName: String): List<T> = try {
         val dataSnapshot = db.child(collectionName).get().await()

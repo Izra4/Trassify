@@ -1,15 +1,13 @@
 package com.praktikum.trassify.data.repository
 
-import android.util.Log
 import com.praktikum.trassify.data.Response
-import com.praktikum.trassify.data.model.Merchandise
 import com.praktikum.trassify.data.model.Schedule
-import com.praktikum.trassify.data.remote.FirestoreRemote
+import com.praktikum.trassify.data.remote.FirebaseRemote
 
 class ScheduleRepository {
     suspend fun getAllSchedules(): Response<List<Schedule>> {
         return try {
-            val schedules = FirestoreRemote.getAllData<Schedule>("schedules")
+            val schedules = FirebaseRemote.getAllData<Schedule>("schedules")
             if (schedules.isEmpty()) {
                 Response.Error("merchandise is empty")
             } else {
