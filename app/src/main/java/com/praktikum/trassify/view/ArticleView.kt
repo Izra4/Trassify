@@ -112,7 +112,7 @@ fun ArticleItem(article: Article, navController: NavController) {
             .fillMaxWidth()
             .clickable { // Add clickable behavior
                 // Navigate to article detail screen
-                navController.navigate("articleDetail/${article.id}")
+                navController.navigate("article/${article.id}")
             },
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
