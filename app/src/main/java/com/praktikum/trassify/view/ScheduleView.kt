@@ -53,12 +53,10 @@ fun ScheduleView(viewModel: ScheduleViewModel = viewModel(factory = ScheduleView
     val selectedSubdistrict = remember { mutableStateOf("") }
     val selectedTime = remember { mutableStateOf("") }
 
-    // Fetch schedules when the composable is first launched
     LaunchedEffect(Unit) {
         viewModel.getAllSchedules()
     }
 
-    // Filter schedules whenever the selection changes
     LaunchedEffect(selectedVillage.value, selectedSubdistrict.value, selectedTime.value) {
         viewModel.filterSchedules(
             selectedVillage.value,
@@ -67,7 +65,6 @@ fun ScheduleView(viewModel: ScheduleViewModel = viewModel(factory = ScheduleView
         )
     }
 
-    // Map the timesState list to extract date and time for dropdown
     val formattedTimes = timesState.map { extractDateAndTime(it).second }
 
     Box(
@@ -147,7 +144,7 @@ fun ScheduleView(viewModel: ScheduleViewModel = viewModel(factory = ScheduleView
                             color = MaterialTheme.colorScheme.error
                         )
                     }
-                    is Response.Idle -> { /* Idle State */ }
+                    is Response.Idle -> {}
                 }
             }
         }
