@@ -18,34 +18,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import com.praktikum.trassify.ui.theme.TrassifyTheme
-import com.praktikum.trassify.view.BottomNavBar
-import com.praktikum.trassify.view.CameraPreviewScreen
-import com.praktikum.trassify.view.ReportWastePage
-import com.praktikum.trassify.viewmodel.BottomNavViewModel
-import com.praktikum.trassify.viewmodel.CameraViewModel
-import com.praktikum.trassify.viewmodel.CameraViewModelFactory
-import com.praktikum.trassify.viewmodel.WasteReportViewModel
-import com.praktikum.trassify.viewmodel.WasteReportViewModelFactory
-import com.praktikum.trassify.model.CameraRepository
-import com.praktikum.trassify.data.repository.WasteReportRepository
+import com.praktikum.trassify.data.repository.CameraRepository
 import com.praktikum.trassify.data.repository.UserRepository
-import com.praktikum.trassify.ui.screens.LoginScreen
+import com.praktikum.trassify.data.repository.WasteReportRepository
+import com.praktikum.trassify.data.model.Article
+import com.praktikum.trassify.data.model.Merchandise
+import com.praktikum.trassify.data.model.Schedule
 import com.praktikum.trassify.ui.screens.DashboardScreen
+import com.praktikum.trassify.ui.screens.LoginScreen
 import com.praktikum.trassify.ui.screens.RegisterScreen
-import com.praktikum.trassify.view.WasteReportHistoryDetailPage
 import com.praktikum.trassify.view.WelcomeScreen
-import com.praktikum.trassify.viewmodel.AuthViewModel
-import com.praktikum.trassify.viewmodel.AuthViewModelFactory
-import com.praktikum.trassify.view.WasteReportHistoryView
-import com.praktikum.trassify.viewmodel.LocationViewModel
+import com.praktikum.trassify.ui.theme.TrassifyTheme
+import com.praktikum.trassify.utils.formatTimestamp
+import com.praktikum.trassify.view.*
+import com.praktikum.trassify.viewmodel.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -59,7 +49,6 @@ class MainActivity : ComponentActivity() {
     private lateinit var wasteReportViewModel: WasteReportViewModel
     private val credentialManager by lazy { CredentialManager.create(this) }
 
-    // Pindahkan deklarasi launcher ke dalam onCreate()
     private lateinit var cameraPermissionRequest: ActivityResultLauncher<String>
     private lateinit var pickImageLauncher: ActivityResultLauncher<String>
 
@@ -86,11 +75,10 @@ class MainActivity : ComponentActivity() {
         // Inisialisasi LocationViewModel
         locationViewModel = ViewModelProvider(this)[LocationViewModel::class.java]
 
-
         // Inisialisasi BottomNavViewModel
         bottomNavViewModel = ViewModelProvider(this)[BottomNavViewModel::class.java]
 
-        // Inisialisasi WasteReportViewModel menggunakan Factory
+        // Inisialisasi WasteReportViewModel
         val wasteReportRepository = WasteReportRepository(FirebaseDatabase.getInstance().reference)
         val wasteReportViewModelFactory = WasteReportViewModelFactory(wasteReportRepository)
         wasteReportViewModel = ViewModelProvider(
@@ -106,12 +94,14 @@ class MainActivity : ComponentActivity() {
             // Handle picked image
         }
 
+        // Bagian Seeding Data Article dan Merchandise
+        seedScheduleData()
+
         setContent {
             TrassifyTheme {
                 val navController = rememberNavController()
                 val currentUser by authViewModel.currentUser.collectAsState()
 
-                // Main NavHost untuk seluruh aplikasi
                 NavHost(
                     navController = navController,
                     startDestination = if (currentUser != null) "home" else "welcome"
@@ -139,7 +129,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("home") {
-                        // Tampilan home dengan Bottom Navigation
                         TrassifyApp(
                             navController = navController,
                             cameraViewModel = cameraViewModel,
@@ -150,7 +139,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("camera") {
-                        // Halaman kamera
                         CameraPreviewScreen(
                             navController = navController,
                             viewModel = cameraViewModel,
@@ -159,7 +147,6 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("reportWaste") {
-                        // Halaman untuk laporan sampah
                         ReportWastePage(
                             wasteReportViewModel = wasteReportViewModel,
                             locationViewModel = locationViewModel,
@@ -188,6 +175,53 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * Fungsi untuk melakukan seeding data articles dan merchandise
+     * ke Firebase Realtime Database.
+     */
+    private fun seedScheduleData() {
+        val db = FirebaseDatabase.getInstance().reference
+        val timestamp = formatTimestamp(System.currentTimeMillis())
+
+        val schedules = listOf(
+            Schedule(
+                id = "schedule1",
+                village = "Dinoyo",
+                subdistrict = "Lowokwaru",
+                timeStamp = timestamp
+            ),
+            Schedule(
+                id = "schedule2",
+                village = "Sukun",
+                subdistrict = "Sukun",
+                timeStamp = timestamp
+            ),
+            Schedule(
+                id = "schedule3",
+                village = "Bunulrejo",
+                subdistrict = "Blimbing",
+                timeStamp = timestamp
+            ),
+            Schedule(
+                id = "schedule4",
+                village = "Kauman",
+                subdistrict = "Klojen",
+                timeStamp = timestamp
+            ),
+            Schedule(
+                id = "schedule5",
+                village = "Tlogowaru",
+                subdistrict = "Kedungkandang",
+                timeStamp = timestamp
+            )
+        )
+
+        for (schedule in schedules) {
+            db.child("schedules").child(schedule.id).setValue(schedule)
+        }
+    }
+
+
     private fun signInWithGoogle(navController: NavController) {
         authViewModel.signInWithGoogle(
             credentialManager = credentialManager,
@@ -205,7 +239,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TrassifyApp(
-    navController: NavController,  // Gunakan NavController yang sama
+    navController: NavController,
     cameraViewModel: CameraViewModel,
     bottomNavViewModel: BottomNavViewModel,
     wasteReportViewModel: WasteReportViewModel,

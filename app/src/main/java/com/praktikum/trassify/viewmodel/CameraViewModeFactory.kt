@@ -2,7 +2,7 @@ package com.praktikum.trassify.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.praktikum.trassify.model.CameraRepository
+import com.praktikum.trassify.data.repository.CameraRepository
 
 class CameraViewModelFactory(private val cameraRepository: CameraRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

@@ -14,7 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import com.praktikum.trassify.model.CameraRepository
+import com.praktikum.trassify.data.repository.CameraRepository
 
 class CameraViewModel(private val cameraRepository: CameraRepository) : ViewModel() {
     // Menyimpan status izin akses kamera

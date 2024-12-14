@@ -12,7 +12,7 @@ fun formatTimestamp(timestamp: Long): String {
 fun extractDateAndTime(timestamp: String): Pair<String, String> {
     val parts = timestamp.split(" ") // Pisahkan berdasarkan spasi
     val date = "${parts[0]} ${parts[1]} ${parts[2]} ${parts[3]}" // Contoh: "Senin, 17 Agustus 1945"
-    val time = parts[4] // Contoh: "14:45:30"
+    val time = parts[4].substring(0, 5)
     return Pair(date, time)
 }
 

@@ -1,4 +1,4 @@
-package com.praktikum.trassify.model
+package com.praktikum.trassify.data.repository
 
 import android.content.Context
 import androidx.camera.core.ImageCapture
