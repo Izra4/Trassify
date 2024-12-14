@@ -21,16 +21,53 @@ import kotlinx.coroutines.launch
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository
-) : ViewModel(){
+) : ViewModel() {
 
     private val _schedules: MutableStateFlow<Response<List<Schedule>>> = MutableStateFlow(Response.Idle)
-    val schedules : StateFlow<Response<List<Schedule>>> = _schedules
+    val schedules: StateFlow<Response<List<Schedule>>> = _schedules
 
-    fun getAllSchedules(){
+    private val _villages: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    val villages: StateFlow<List<String>> = _villages
+
+    private val _subdistricts: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    val subdistricts: StateFlow<List<String>> = _subdistricts
+
+    private val _times: MutableStateFlow<List<String>> = MutableStateFlow(emptyList())
+    val times: StateFlow<List<String>> = _times
+
+    private var allSchedules: List<Schedule> = emptyList()
+
+    fun getAllSchedules() {
         viewModelScope.launch {
             _schedules.value = Response.Loading
             val response = scheduleRepository.getAllSchedules()
             _schedules.value = response
+            if (response is Response.Success) {
+                allSchedules = response.data
+                updateDropdowns(allSchedules)
+            }
+        }
+    }
+
+    private fun updateDropdowns(schedules: List<Schedule>) {
+        val villagesList = schedules.map { it.village }.distinct()
+        val subdistrictsList = schedules.map { it.subdistrict }.distinct()
+        val timesList = schedules.map { it.timeStamp }.distinct()
+
+        _villages.value = villagesList
+        _subdistricts.value = subdistrictsList
+        _times.value = timesList
+    }
+
+    fun filterSchedules(village: String, subdistrict: String, time: String) {
+        viewModelScope.launch {
+            _schedules.value = Response.Loading
+            val filteredSchedules = allSchedules.filter {
+                (village.isEmpty() || it.village == village) &&
+                        (subdistrict.isEmpty() || it.subdistrict == subdistrict) &&
+                        (time.isEmpty() || it.timeStamp == time)
+            }
+            _schedules.value = Response.Success(filteredSchedules)
         }
     }
 
@@ -38,12 +75,8 @@ class ScheduleViewModel(
         fun Factory(context: Context): ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val scheduleRepository = ScheduleRepository()
-                ScheduleViewModel(
-                    scheduleRepository = scheduleRepository
-
-                )
+                ScheduleViewModel(scheduleRepository = scheduleRepository)
             }
         }
     }
-
 }

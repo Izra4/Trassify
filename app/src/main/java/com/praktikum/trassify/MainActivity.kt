@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             TrassifyTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column (modifier = Modifier.padding(innerPadding)){
-                        DashboardView()
+                        ScheduleView()
                     }
                 }
             }
