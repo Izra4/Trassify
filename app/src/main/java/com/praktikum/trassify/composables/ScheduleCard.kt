@@ -68,9 +68,3 @@ fun ScheduleCard(
         }
     }
 }
-
-@Preview(showBackground = true)
-@Composable()
-fun ScheduleCardPreview(){
-    ScheduleCard()
-}

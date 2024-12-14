@@ -26,12 +26,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
 import com.praktikum.trassify.ui.theme.Primary10
 import com.praktikum.trassify.ui.theme.TextType
 import com.praktikum.trassify.ui.theme.White
 
 @Composable()
-fun ProfileCard(){
+fun ProfileCard(
+    username : String,
+    point : Int,
+    image : String,
+){
     Box(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
@@ -63,7 +68,7 @@ fun ProfileCard(){
         }
         Row (modifier = Modifier.padding(vertical = 10.dp, horizontal = 16.dp)){
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background) , contentDescription = "image profile user", modifier = Modifier
+                painter = rememberAsyncImagePainter(model = image) , contentDescription = "image profile user", modifier = Modifier
                     .size(64.dp)
                     .clip(
                         CircleShape
@@ -71,9 +76,9 @@ fun ProfileCard(){
                     .border(width = 2.dp, color = Primary10, shape = CircleShape))
             Spacer(modifier = Modifier.width(12.dp))
             Column {
-                Text(text = "Nabih", style = TextType.text19Md)
+                Text(text = username, style = TextType.text19Md)
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(text = "Kamu punya 250 poin!", style = TextType.text12Md)
+                Text(text = "Kamu punya $point poin!", style = TextType.text12Md)
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -91,5 +96,9 @@ fun ProfileCard(){
 @Preview(showBackground = true)
 @Composable()
 fun ProfileCardPreview(){
-    ProfileCard()
+    ProfileCard(
+        username = "testing",
+        image = "hh",
+        point = 100
+    )
 }

@@ -55,7 +55,11 @@ fun MerchandiseView(){
                     .padding(20.dp)
 
             ){
-                ProfileCard()
+                ProfileCard(
+                    username = "testing",
+                    point = 100,
+                    image = "https://img.freepik.com/free-psd/portrait-man-teenager-isolated_23-2151745763.jpg?t=st=1734101251~exp=1734104851~hmac=cc03f1f2513248499646914799cfa3077cb2738da78cbd767706033b390b99ba&w=740"
+                )
                 Spacer(modifier = Modifier.height(20.dp))
                 LazyVerticalGrid (
                     columns = GridCells.Fixed(2),
@@ -63,7 +67,7 @@ fun MerchandiseView(){
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(10) {
-                        MerchandiseCard()
+//                        MerchandiseCard()
                     }
                 }
             }
