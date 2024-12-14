@@ -38,6 +38,11 @@ object TextType{
         fontSize = 18.sp
     )
 
+    val text19Md = TextStyle(
+        fontFamily = FontFamily(Font(R.font.mont_md)),
+        fontSize = 19.sp,
+    )
+
     val text16SemiBold = TextStyle(
         fontFamily = FontFamily(Font((R.font.mont_semi_bold))),
         fontSize = 16.sp,

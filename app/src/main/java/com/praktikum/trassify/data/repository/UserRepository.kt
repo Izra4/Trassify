@@ -6,7 +6,9 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.data.model.User
+import com.praktikum.trassify.data.remote.FirebaseRemote
 import com.praktikum.trassify.utils.formatTimestamp
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -71,6 +73,19 @@ class UserRepository(
             usersRef.child(uid).removeValue().await()
         } catch (e: Exception) {
             throw e
+        }
+    }
+
+    suspend fun getDashboardProfile(id: String): Response<User?> {
+        return try {
+            val user = FirebaseRemote.getDataById<User>("users", id)
+            if (user != null) {
+                Response.Success(user)
+            } else {
+                Response.Error("User with id $id not found")
+            }
+        } catch (e: Exception) {
+            Response.Error(e.message ?: "An unknown error occurred")
         }
     }
 
