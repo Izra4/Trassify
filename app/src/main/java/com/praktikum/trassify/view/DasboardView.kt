@@ -23,7 +23,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.praktikum.trassify.R
 import com.praktikum.trassify.composables.ArticleCard
@@ -37,6 +36,7 @@ import com.praktikum.trassify.composables.Skeleton
 import com.praktikum.trassify.composables.skeletons.ArticleSkeleton
 import com.praktikum.trassify.composables.skeletons.MerchandiseSkeleton
 import com.praktikum.trassify.composables.skeletons.ProfileSkeleton
+import com.praktikum.trassify.composables.skeletons.ScheduleSkeleton
 import com.praktikum.trassify.data.Response
 
 @Composable()
@@ -211,7 +211,7 @@ fun DashboardView(viewModel: DashboardViewModel = viewModel(factory = DashboardV
                 is Response.Loading -> {
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(5) {
-                            MerchandiseSkeleton()
+                            ScheduleSkeleton()
                         }
                     }
                 }
