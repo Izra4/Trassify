@@ -43,7 +43,9 @@ import com.praktikum.trassify.data.Response
 import com.praktikum.trassify.viewmodel.DashboardViewModelFactory
 
 @Composable()
-fun DashboardView(viewModel: DashboardViewModel, navController: NavController) {
+fun DashboardView(
+    viewModel: DashboardViewModel,
+    navController: NavController) {
     val profileState by viewModel.userProfile.collectAsState()
     val merchandisesState by viewModel.merchandises.collectAsState()
     val articlesState by viewModel.articles.collectAsState()

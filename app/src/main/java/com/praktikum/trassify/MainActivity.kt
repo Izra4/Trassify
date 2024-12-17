@@ -28,7 +28,6 @@ import com.praktikum.trassify.data.repository.MerchandiseRepository
 import com.praktikum.trassify.data.repository.ScheduleRepository
 import com.praktikum.trassify.data.repository.UserRepository
 import com.praktikum.trassify.data.repository.WasteReportRepository
-import com.praktikum.trassify.ui.screens.DashboardScreen
 import com.praktikum.trassify.ui.screens.LoginScreen
 import com.praktikum.trassify.ui.screens.RegisterScreen
 import com.praktikum.trassify.view.WelcomeScreen
@@ -144,7 +143,7 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = if (currentUser != null) "home" else "login"
+                    startDestination = if (currentUser != null) "home" else "welcome"
                 ) {
                     composable("login") {
                         LoginScreen(
@@ -156,7 +155,7 @@ class MainActivity : ComponentActivity() {
                     composable("dashboard") {
                         DashboardView(
                             viewModel = dashboardViewModel,
-                            navController = navController)
+                            navController = navController,)
                     }
                     composable("welcome") {
                         WelcomeScreen(navController = navController)

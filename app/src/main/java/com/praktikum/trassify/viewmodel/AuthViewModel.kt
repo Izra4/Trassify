@@ -113,7 +113,7 @@ class AuthViewModel(
                         val user = userRepository.createOrUpdateUser(authResult.user!!)
                         _currentUser.value = user
                         _signInState.value = SignInState.Success
-                        navController.navigate("dashboard") {
+                        navController.navigate("home") {
                             popUpTo("login") { inclusive = true }
                         }
                     } catch (e: Exception) {
