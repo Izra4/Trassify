@@ -66,7 +66,7 @@ fun RegisterScreen(
                 color = Color.Black,
                 letterSpacing = 3.sp,
                 style = TextType.text25SemiBold,
-                modifier = Modifier.padding(top = 14.dp)
+//                modifier = Modifier.padding(top = 7.dp)
             )
 
             Spacer(modifier = Modifier.height(15.dp))

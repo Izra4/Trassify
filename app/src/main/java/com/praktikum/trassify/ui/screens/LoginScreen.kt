@@ -66,7 +66,7 @@ fun LoginScreen(
                 color = Color.Black,
                 letterSpacing = 3.sp,
                 style = TextType.text25SemiBold,
-                modifier = Modifier.padding(top = 24.dp)
+                modifier = Modifier.padding(top = 10.dp)
             )
 
             Spacer(modifier = Modifier.height(30.dp))

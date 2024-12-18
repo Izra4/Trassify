@@ -43,7 +43,6 @@ class WasteReportViewModel(
     ) {
         viewModelScope.launch {
             try {
-                // Menggunakan uriToByteArray dari utilitas
                 val imageBytes = uriToByteArray(context, imageUri)
                 if (imageBytes == null) {
                     onError(Exception("Gagal mengonversi gambar"))
@@ -106,7 +105,7 @@ class WasteReportViewModel(
                 onSuccess = { reports ->
                     allWasteReports.clear()
                     allWasteReports.addAll(reports)
-                    filterReports() // Filter laporan sesuai filter saat ini
+                    filterReports()
                     onSuccess()
                 },
                 onError = { exception ->

@@ -29,7 +29,6 @@ class ArticleViewModel(
     private val _articles = MutableStateFlow<Response<List<Article>>>(Response.Idle)
     val articles: StateFlow<Response<List<Article>>> = _articles
 
-    // Fungsi untuk mengambil semua artikel
     fun getAllArticle() {
         viewModelScope.launch {
             _articles.value = Response.Loading

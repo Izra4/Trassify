@@ -56,7 +56,7 @@ class AuthViewModel(
         Log.d(TAG, "Using Web Client ID: $clientId")
 
         val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
+            .setFilterByAuthorizedAccounts(true)
             .setServerClientId(clientId)
             .build()
 
